@@ -1,0 +1,479 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/master_menu"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/dark_blue">
+
+    <LinearLayout
+        android:id="@+id/container1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/container2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <LinearLayout
+                android:id="@+id/container3"
+                android:layout_width="357dp"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/imageBluetooth"
+                    android:layout_width="60dp"
+                    android:layout_height="47dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:background="@drawable/outline_bluetooth_24"
+
+
+
+                    />
+
+                <ImageView
+                    android:id="@+id/imageViewLogo"
+                    android:layout_width="290dp"
+                    android:layout_height="60dp"
+                    android:layout_gravity="center"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/vprog" />
+
+            </LinearLayout>
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:id="@+id/container4"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:id="@+id/line1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/textObd2"
+                            android:layout_width="100dp"
+                            android:layout_height="60dp"
+                            android:layout_margin="10dp"
+                            android:background="@drawable/button_stroke_dark_red_press_white"
+                            android:gravity="center"
+                            android:text="OBD2"
+                            android:textColor="@color/white"
+                            android:textSize="20sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/textAudi"
+                            android:layout_width="100dp"
+                            android:layout_height="60dp"
+                            android:layout_margin="10dp"
+                            android:background="@drawable/button_stroke_dark_red_press_white"
+                            android:gravity="center"
+                            android:text="Audi"
+                            android:textColor="@color/gray"
+                            android:textSize="15sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/textBmw"
+                            android:layout_width="100dp"
+                            android:layout_height="60dp"
+                            android:layout_margin="10dp"
+                            android:background="@drawable/button_stroke_dark_red_press_white"
+                            android:gravity="center"
+                            android:text="BMW"
+                            android:textColor="@color/gray"
+                            android:textSize="15sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/line2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/textCadillac"
+                            android:layout_width="100dp"
+                            android:layout_height="60dp"
+                            android:layout_margin="10dp"
+                            android:background="@drawable/button_stroke_dark_red_press_white"
+                            android:gravity="center"
+                            android:text="Cadilac"
+                            android:textColor="@color/gray"
+                            android:textSize="15sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/textChevrolet"
+                            android:layout_width="100dp"
+                            android:layout_height="60dp"
+                            android:layout_margin="10dp"
+                            android:background="@drawable/button_stroke_dark_red_press_white"
+                            android:gravity="center"
+                            android:text="Chevrolet"
+                            android:textColor="@color/gray"
+                            android:textSize="15sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/textChina"
+                            android:layout_width="100dp"
+                            android:layout_height="60dp"
+                            android:layout_margin="10dp"
+                            android:background="@drawable/button_stroke_dark_red_press_white"
+                            android:gravity="center"
+                            android:text="China"
+                            android:textColor="@color/gray"
+                            android:textSize="15sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/line3"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/textFiat"
+                            android:layout_width="100dp"
+                            android:layout_height="60dp"
+                            android:layout_margin="10dp"
+                            android:background="@drawable/button_stroke_dark_red_press_white"
+                            android:gravity="center"
+                            android:text="Fiat"
+                            android:textColor="@color/gray"
+                            android:textSize="15sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/textFord"
+                            android:layout_width="100dp"
+                            android:layout_height="60dp"
+                            android:layout_margin="10dp"
+                            android:background="@drawable/button_stroke_dark_red_press_white"
+                            android:gravity="center"
+                            android:text="Ford"
+                            android:textColor="@color/gray"
+                            android:textSize="15sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/textHonda"
+                            android:layout_width="100dp"
+                            android:layout_height="60dp"
+                            android:layout_margin="10dp"
+                            android:background="@drawable/button_stroke_dark_red_press_white"
+                            android:gravity="center"
+                            android:text="Honda"
+                            android:textColor="@color/gray"
+                            android:textSize="15sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/line4"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/textJaguar"
+                            android:layout_width="100dp"
+                            android:layout_height="60dp"
+                            android:layout_margin="10dp"
+                            android:background="@drawable/button_stroke_dark_red_press_white"
+                            android:gravity="center"
+                            android:text="Jaguar"
+                            android:textColor="@color/gray"
+                            android:textSize="15sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/textKiaHyundai"
+                            android:layout_width="100dp"
+                            android:layout_height="60dp"
+                            android:layout_margin="10dp"
+                            android:background="@drawable/button_stroke_dark_red_press_white"
+                            android:gravity="center"
+                            android:text="Kia-Hyundai"
+                            android:textColor="@color/gray"
+                            android:textSize="13sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/textLada"
+                            android:layout_width="100dp"
+                            android:layout_height="60dp"
+                            android:layout_margin="10dp"
+                            android:background="@drawable/button_stroke_dark_red_press_white"
+                            android:gravity="center"
+                            android:text="Lada"
+                            android:textColor="@color/gray"
+                            android:textSize="15sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/line5"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/textLandRover"
+                            android:layout_width="100dp"
+                            android:layout_height="60dp"
+                            android:layout_margin="10dp"
+                            android:background="@drawable/button_stroke_dark_red_press_white"
+                            android:gravity="center"
+                            android:text="Land Rover"
+                            android:textColor="@color/gray"
+                            android:textSize="13sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/textMazda"
+                            android:layout_width="100dp"
+                            android:layout_height="60dp"
+                            android:layout_margin="10dp"
+                            android:background="@drawable/button_stroke_dark_red_press_white"
+                            android:gravity="center"
+                            android:text="Mazda"
+                            android:textColor="@color/gray"
+                            android:textSize="15sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/textMercedes"
+                            android:layout_width="100dp"
+                            android:layout_height="60dp"
+                            android:layout_margin="10dp"
+                            android:background="@drawable/button_stroke_dark_red_press_white"
+                            android:gravity="center"
+                            android:text="Mercedes"
+                            android:textColor="@color/gray"
+                            android:textSize="15sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+
+                    <LinearLayout
+                        android:id="@+id/line6"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/textMitsubishi"
+                            android:layout_width="100dp"
+                            android:layout_height="60dp"
+                            android:layout_margin="10dp"
+                            android:background="@drawable/button_stroke_dark_red_press_white"
+                            android:gravity="center"
+                            android:text="Mitsibishi"
+                            android:textColor="@color/gray"
+                            android:textSize="15sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/textNissan"
+                            android:layout_width="100dp"
+                            android:layout_height="60dp"
+                            android:layout_margin="10dp"
+                            android:background="@drawable/button_stroke_dark_red_press_white"
+                            android:gravity="center"
+                            android:text="Nissan"
+                            android:textColor="@color/gray"
+                            android:textSize="15sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/textPsa"
+                            android:layout_width="100dp"
+                            android:layout_height="60dp"
+                            android:layout_margin="10dp"
+                            android:background="@drawable/button_stroke_dark_red_press_white"
+                            android:gravity="center"
+                            android:text="PSA"
+                            android:textColor="@color/gray"
+                            android:textSize="15sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/line7"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/textRenault"
+                            android:layout_width="100dp"
+                            android:layout_height="60dp"
+                            android:layout_margin="10dp"
+                            android:background="@drawable/button_stroke_dark_red_press_white"
+                            android:gravity="center"
+                            android:text="Renault"
+                            android:textColor="@color/white"
+                            android:textSize="15sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/textSubaru"
+                            android:layout_width="100dp"
+                            android:layout_height="60dp"
+                            android:layout_margin="10dp"
+                            android:background="@drawable/button_stroke_dark_red_press_white"
+                            android:gravity="center"
+                            android:text="Subaru"
+                            android:textColor="@color/gray"
+                            android:textSize="15sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/textSuzuki"
+                            android:layout_width="100dp"
+                            android:layout_height="60dp"
+                            android:layout_margin="10dp"
+                            android:background="@drawable/button_stroke_dark_red_press_white"
+                            android:gravity="center"
+                            android:text="Suzuki"
+                            android:textColor="@color/gray"
+                            android:textSize="15sp"
+                            android:textStyle="bold" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/line8"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/textToyota"
+                            android:layout_width="100dp"
+                            android:layout_height="60dp"
+                            android:layout_margin="10dp"
+                            android:background="@drawable/button_stroke_dark_red_press_white"
+                            android:gravity="center"
+                            android:text="Toyota"
+                            android:textColor="@color/gray"
+                            android:textSize="15sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/textUaz"
+                            android:layout_width="100dp"
+                            android:layout_height="60dp"
+                            android:layout_margin="10dp"
+                            android:background="@drawable/button_stroke_dark_red_press_white"
+                            android:gravity="center"
+                            android:text="UAZ"
+                            android:textColor="@color/gray"
+                            android:textSize="15sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/textVag"
+                            android:layout_width="100dp"
+                            android:layout_height="60dp"
+                            android:layout_margin="10dp"
+                            android:background="@drawable/button_stroke_dark_red_press_white"
+                            android:gravity="center"
+                            android:text="VAG"
+                            android:textColor="@color/gray"
+                            android:textSize="15sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/line9"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/textVolvo"
+                            android:layout_width="100dp"
+                            android:layout_height="60dp"
+                            android:layout_margin="10dp"
+                            android:background="@drawable/button_stroke_dark_red_press_white"
+                            android:gravity="center"
+                            android:text="Volvo"
+                            android:textColor="@color/gray"
+                            android:textSize="15sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/textView26"
+                            android:layout_width="100dp"
+                            android:layout_height="60dp"
+                            android:layout_margin="10dp"
+                            android:background="@drawable/button_stroke_dark_red_press_white"
+                            android:gravity="center"
+                            android:text="__"
+                            android:textColor="@color/gray"
+                            android:textSize="15sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/textView27"
+                            android:layout_width="100dp"
+                            android:layout_height="60dp"
+                            android:layout_margin="10dp"
+                            android:background="@drawable/button_stroke_dark_red_press_white"
+                            android:gravity="center"
+                            android:text="__"
+                            android:textColor="@color/gray"
+                            android:textSize="15sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+
+                </LinearLayout>
+
+            </ScrollView>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+
+
+
+
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

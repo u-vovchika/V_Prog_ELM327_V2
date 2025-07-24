@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">V_PROG_ELM327</string>
+    <string name="Back">Назад</string>
+    <string name="connect">Connect</string>
+</resources>
