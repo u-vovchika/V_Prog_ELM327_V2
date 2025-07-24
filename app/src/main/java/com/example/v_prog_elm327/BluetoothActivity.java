@@ -74,7 +74,7 @@ public class BluetoothActivity extends AppCompatActivity {
                 startActivity(intent);
                 finish(); // Закрываем SplashActivity
             }
-        }, 5000); // Задержка в 3 секунды
+        }, 3000); // Задержка в 3 секунды
     }
 
 
