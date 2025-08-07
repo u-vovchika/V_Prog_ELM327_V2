@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/master_menu"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -30,21 +29,18 @@
 
                 <ImageView
                     android:id="@+id/imageBluetooth"
-                    android:layout_width="60dp"
-                    android:layout_height="47dp"
+                    android:layout_width="128dp"
+                    android:layout_height="40dp"
+                    android:background="@drawable/outline_bluetooth_disabled_24"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    android:background="@drawable/outline_bluetooth_24"
-
-
-
-                    />
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <ImageView
                     android:id="@+id/imageViewLogo"
                     android:layout_width="290dp"
                     android:layout_height="60dp"
-                    android:layout_gravity="center"
+
+                    android:foregroundGravity="right"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:srcCompat="@drawable/vprog" />
@@ -70,38 +66,14 @@
 
                         <TextView
                             android:id="@+id/textObd2"
-                            android:layout_width="100dp"
+                            android:layout_width="match_parent"
                             android:layout_height="60dp"
                             android:layout_margin="10dp"
                             android:background="@drawable/button_stroke_dark_red_press_white"
                             android:gravity="center"
-                            android:text="OBD2"
+                            android:text="@string/obd2"
                             android:textColor="@color/white"
-                            android:textSize="20sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:id="@+id/textAudi"
-                            android:layout_width="100dp"
-                            android:layout_height="60dp"
-                            android:layout_margin="10dp"
-                            android:background="@drawable/button_stroke_dark_red_press_white"
-                            android:gravity="center"
-                            android:text="Audi"
-                            android:textColor="@color/gray"
-                            android:textSize="15sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:id="@+id/textBmw"
-                            android:layout_width="100dp"
-                            android:layout_height="60dp"
-                            android:layout_margin="10dp"
-                            android:background="@drawable/button_stroke_dark_red_press_white"
-                            android:gravity="center"
-                            android:text="BMW"
-                            android:textColor="@color/gray"
-                            android:textSize="15sp"
+                            android:textSize="25sp"
                             android:textStyle="bold" />
                     </LinearLayout>
 
@@ -113,39 +85,15 @@
                         android:orientation="horizontal">
 
                         <TextView
-                            android:id="@+id/textCadillac"
-                            android:layout_width="100dp"
+                            android:id="@+id/textAudi"
+                            android:layout_width="match_parent"
                             android:layout_height="60dp"
                             android:layout_margin="10dp"
                             android:background="@drawable/button_stroke_dark_red_press_white"
                             android:gravity="center"
-                            android:text="Cadilac"
+                            android:text="@string/audi"
                             android:textColor="@color/gray"
-                            android:textSize="15sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:id="@+id/textChevrolet"
-                            android:layout_width="100dp"
-                            android:layout_height="60dp"
-                            android:layout_margin="10dp"
-                            android:background="@drawable/button_stroke_dark_red_press_white"
-                            android:gravity="center"
-                            android:text="Chevrolet"
-                            android:textColor="@color/gray"
-                            android:textSize="15sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:id="@+id/textChina"
-                            android:layout_width="100dp"
-                            android:layout_height="60dp"
-                            android:layout_margin="10dp"
-                            android:background="@drawable/button_stroke_dark_red_press_white"
-                            android:gravity="center"
-                            android:text="China"
-                            android:textColor="@color/gray"
-                            android:textSize="15sp"
+                            android:textSize="20sp"
                             android:textStyle="bold" />
                     </LinearLayout>
 
@@ -157,39 +105,15 @@
                         android:orientation="horizontal">
 
                         <TextView
-                            android:id="@+id/textFiat"
-                            android:layout_width="100dp"
+                            android:id="@+id/textBmw"
+                            android:layout_width="match_parent"
                             android:layout_height="60dp"
                             android:layout_margin="10dp"
                             android:background="@drawable/button_stroke_dark_red_press_white"
                             android:gravity="center"
-                            android:text="Fiat"
+                            android:text="BMW"
                             android:textColor="@color/gray"
-                            android:textSize="15sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:id="@+id/textFord"
-                            android:layout_width="100dp"
-                            android:layout_height="60dp"
-                            android:layout_margin="10dp"
-                            android:background="@drawable/button_stroke_dark_red_press_white"
-                            android:gravity="center"
-                            android:text="Ford"
-                            android:textColor="@color/gray"
-                            android:textSize="15sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:id="@+id/textHonda"
-                            android:layout_width="100dp"
-                            android:layout_height="60dp"
-                            android:layout_margin="10dp"
-                            android:background="@drawable/button_stroke_dark_red_press_white"
-                            android:gravity="center"
-                            android:text="Honda"
-                            android:textColor="@color/gray"
-                            android:textSize="15sp"
+                            android:textSize="20sp"
                             android:textStyle="bold" />
                     </LinearLayout>
 
@@ -201,39 +125,15 @@
                         android:orientation="horizontal">
 
                         <TextView
-                            android:id="@+id/textJaguar"
-                            android:layout_width="100dp"
+                            android:id="@+id/textCadillac"
+                            android:layout_width="match_parent"
                             android:layout_height="60dp"
                             android:layout_margin="10dp"
                             android:background="@drawable/button_stroke_dark_red_press_white"
                             android:gravity="center"
-                            android:text="Jaguar"
+                            android:text="Cadilac"
                             android:textColor="@color/gray"
-                            android:textSize="15sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:id="@+id/textKiaHyundai"
-                            android:layout_width="100dp"
-                            android:layout_height="60dp"
-                            android:layout_margin="10dp"
-                            android:background="@drawable/button_stroke_dark_red_press_white"
-                            android:gravity="center"
-                            android:text="Kia-Hyundai"
-                            android:textColor="@color/gray"
-                            android:textSize="13sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:id="@+id/textLada"
-                            android:layout_width="100dp"
-                            android:layout_height="60dp"
-                            android:layout_margin="10dp"
-                            android:background="@drawable/button_stroke_dark_red_press_white"
-                            android:gravity="center"
-                            android:text="Lada"
-                            android:textColor="@color/gray"
-                            android:textSize="15sp"
+                            android:textSize="20sp"
                             android:textStyle="bold" />
                     </LinearLayout>
 
@@ -245,42 +145,17 @@
                         android:orientation="horizontal">
 
                         <TextView
-                            android:id="@+id/textLandRover"
-                            android:layout_width="100dp"
+                            android:id="@+id/textChevrolet"
+                            android:layout_width="match_parent"
                             android:layout_height="60dp"
                             android:layout_margin="10dp"
                             android:background="@drawable/button_stroke_dark_red_press_white"
                             android:gravity="center"
-                            android:text="Land Rover"
+                            android:text="Chevrolet"
                             android:textColor="@color/gray"
-                            android:textSize="13sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:id="@+id/textMazda"
-                            android:layout_width="100dp"
-                            android:layout_height="60dp"
-                            android:layout_margin="10dp"
-                            android:background="@drawable/button_stroke_dark_red_press_white"
-                            android:gravity="center"
-                            android:text="Mazda"
-                            android:textColor="@color/gray"
-                            android:textSize="15sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:id="@+id/textMercedes"
-                            android:layout_width="100dp"
-                            android:layout_height="60dp"
-                            android:layout_margin="10dp"
-                            android:background="@drawable/button_stroke_dark_red_press_white"
-                            android:gravity="center"
-                            android:text="Mercedes"
-                            android:textColor="@color/gray"
-                            android:textSize="15sp"
+                            android:textSize="20sp"
                             android:textStyle="bold" />
                     </LinearLayout>
-
 
                     <LinearLayout
                         android:id="@+id/line6"
@@ -290,39 +165,15 @@
                         android:orientation="horizontal">
 
                         <TextView
-                            android:id="@+id/textMitsubishi"
-                            android:layout_width="100dp"
+                            android:id="@+id/textChina"
+                            android:layout_width="match_parent"
                             android:layout_height="60dp"
                             android:layout_margin="10dp"
                             android:background="@drawable/button_stroke_dark_red_press_white"
                             android:gravity="center"
-                            android:text="Mitsibishi"
+                            android:text="China"
                             android:textColor="@color/gray"
-                            android:textSize="15sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:id="@+id/textNissan"
-                            android:layout_width="100dp"
-                            android:layout_height="60dp"
-                            android:layout_margin="10dp"
-                            android:background="@drawable/button_stroke_dark_red_press_white"
-                            android:gravity="center"
-                            android:text="Nissan"
-                            android:textColor="@color/gray"
-                            android:textSize="15sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:id="@+id/textPsa"
-                            android:layout_width="100dp"
-                            android:layout_height="60dp"
-                            android:layout_margin="10dp"
-                            android:background="@drawable/button_stroke_dark_red_press_white"
-                            android:gravity="center"
-                            android:text="PSA"
-                            android:textColor="@color/gray"
-                            android:textSize="15sp"
+                            android:textSize="20sp"
                             android:textStyle="bold" />
                     </LinearLayout>
 
@@ -334,41 +185,16 @@
                         android:orientation="horizontal">
 
                         <TextView
-                            android:id="@+id/textRenault"
-                            android:layout_width="100dp"
+                            android:id="@+id/textFiat"
+                            android:layout_width="match_parent"
                             android:layout_height="60dp"
                             android:layout_margin="10dp"
                             android:background="@drawable/button_stroke_dark_red_press_white"
                             android:gravity="center"
-                            android:text="Renault"
-                            android:textColor="@color/white"
-                            android:textSize="15sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:id="@+id/textSubaru"
-                            android:layout_width="100dp"
-                            android:layout_height="60dp"
-                            android:layout_margin="10dp"
-                            android:background="@drawable/button_stroke_dark_red_press_white"
-                            android:gravity="center"
-                            android:text="Subaru"
+                            android:text="Fiat"
                             android:textColor="@color/gray"
-                            android:textSize="15sp"
+                            android:textSize="20sp"
                             android:textStyle="bold" />
-
-                        <TextView
-                            android:id="@+id/textSuzuki"
-                            android:layout_width="100dp"
-                            android:layout_height="60dp"
-                            android:layout_margin="10dp"
-                            android:background="@drawable/button_stroke_dark_red_press_white"
-                            android:gravity="center"
-                            android:text="Suzuki"
-                            android:textColor="@color/gray"
-                            android:textSize="15sp"
-                            android:textStyle="bold" />
-
                     </LinearLayout>
 
                     <LinearLayout
@@ -379,39 +205,15 @@
                         android:orientation="horizontal">
 
                         <TextView
-                            android:id="@+id/textToyota"
-                            android:layout_width="100dp"
+                            android:id="@+id/textFord"
+                            android:layout_width="match_parent"
                             android:layout_height="60dp"
                             android:layout_margin="10dp"
                             android:background="@drawable/button_stroke_dark_red_press_white"
                             android:gravity="center"
-                            android:text="Toyota"
+                            android:text="Ford"
                             android:textColor="@color/gray"
-                            android:textSize="15sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:id="@+id/textUaz"
-                            android:layout_width="100dp"
-                            android:layout_height="60dp"
-                            android:layout_margin="10dp"
-                            android:background="@drawable/button_stroke_dark_red_press_white"
-                            android:gravity="center"
-                            android:text="UAZ"
-                            android:textColor="@color/gray"
-                            android:textSize="15sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:id="@+id/textVag"
-                            android:layout_width="100dp"
-                            android:layout_height="60dp"
-                            android:layout_margin="10dp"
-                            android:background="@drawable/button_stroke_dark_red_press_white"
-                            android:gravity="center"
-                            android:text="VAG"
-                            android:textColor="@color/gray"
-                            android:textSize="15sp"
+                            android:textSize="20sp"
                             android:textStyle="bold" />
                     </LinearLayout>
 
@@ -423,39 +225,339 @@
                         android:orientation="horizontal">
 
                         <TextView
+                            android:id="@+id/textHonda"
+                            android:layout_width="match_parent"
+                            android:layout_height="60dp"
+                            android:layout_margin="10dp"
+                            android:background="@drawable/button_stroke_dark_red_press_white"
+                            android:gravity="center"
+                            android:text="Honda"
+                            android:textColor="@color/gray"
+                            android:textSize="20sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/line10"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/textJaguar"
+                            android:layout_width="match_parent"
+                            android:layout_height="60dp"
+                            android:layout_margin="10dp"
+                            android:background="@drawable/button_stroke_dark_red_press_white"
+                            android:gravity="center"
+                            android:text="Jaguar"
+                            android:textColor="@color/gray"
+                            android:textSize="20sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/line11"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/textKiaHyundai"
+                            android:layout_width="match_parent"
+                            android:layout_height="60dp"
+                            android:layout_margin="10dp"
+                            android:background="@drawable/button_stroke_dark_red_press_white"
+                            android:gravity="center"
+                            android:text="Kia-Hyundai"
+                            android:textColor="@color/gray"
+                            android:textSize="20sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/line12"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/textLada"
+                            android:layout_width="match_parent"
+                            android:layout_height="60dp"
+                            android:layout_margin="10dp"
+                            android:background="@drawable/button_stroke_dark_red_press_white"
+                            android:gravity="center"
+                            android:text="Lada"
+                            android:textColor="@color/gray"
+                            android:textSize="20sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/line13"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/textLandRover"
+                            android:layout_width="match_parent"
+                            android:layout_height="60dp"
+                            android:layout_margin="10dp"
+                            android:background="@drawable/button_stroke_dark_red_press_white"
+                            android:gravity="center"
+                            android:text="Land Rover"
+                            android:textColor="@color/gray"
+                            android:textSize="20sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/line14"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+
+                        <TextView
+                            android:id="@+id/textMazda"
+                            android:layout_width="match_parent"
+                            android:layout_height="60dp"
+                            android:layout_margin="10dp"
+                            android:background="@drawable/button_stroke_dark_red_press_white"
+                            android:gravity="center"
+                            android:text="Mazda"
+                            android:textColor="@color/gray"
+                            android:textSize="20sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/line15"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/textMercedes"
+                            android:layout_width="match_parent"
+                            android:layout_height="60dp"
+                            android:layout_margin="10dp"
+                            android:background="@drawable/button_stroke_dark_red_press_white"
+                            android:gravity="center"
+                            android:text="Mercedes"
+                            android:textColor="@color/gray"
+                            android:textSize="20sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+
+                    <LinearLayout
+                        android:id="@+id/line16"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/textMitsubishi"
+                            android:layout_width="match_parent"
+                            android:layout_height="60dp"
+                            android:layout_margin="10dp"
+                            android:background="@drawable/button_stroke_dark_red_press_white"
+                            android:gravity="center"
+                            android:text="Mitsibishi"
+                            android:textColor="@color/gray"
+                            android:textSize="20sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/line17"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/textNissan"
+                            android:layout_width="match_parent"
+                            android:layout_height="60dp"
+                            android:layout_margin="10dp"
+                            android:background="@drawable/button_stroke_dark_red_press_white"
+                            android:gravity="center"
+                            android:text="Nissan"
+                            android:textColor="@color/gray"
+                            android:textSize="20sp"
+                            android:textStyle="bold" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/line18"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/textPsa"
+                            android:layout_width="match_parent"
+                            android:layout_height="60dp"
+                            android:layout_margin="10dp"
+                            android:background="@drawable/button_stroke_dark_red_press_white"
+                            android:gravity="center"
+                            android:text="PSA"
+                            android:textColor="@color/gray"
+                            android:textSize="20sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/line19"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/textRenault"
+                            android:layout_width="match_parent"
+                            android:layout_height="60dp"
+                            android:layout_margin="10dp"
+                            android:background="@drawable/button_stroke_dark_red_press_white"
+                            android:gravity="center"
+                            android:text="Renault"
+                            android:textColor="@color/white"
+                            android:textSize="20sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/line20"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/textSubaru"
+                            android:layout_width="match_parent"
+                            android:layout_height="60dp"
+                            android:layout_margin="10dp"
+                            android:background="@drawable/button_stroke_dark_red_press_white"
+                            android:gravity="center"
+                            android:text="Subaru"
+                            android:textColor="@color/gray"
+                            android:textSize="20sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/line21"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/textSuzuki"
+                            android:layout_width="match_parent"
+                            android:layout_height="60dp"
+                            android:layout_margin="10dp"
+                            android:background="@drawable/button_stroke_dark_red_press_white"
+                            android:gravity="center"
+                            android:text="Suzuki"
+                            android:textColor="@color/gray"
+                            android:textSize="20sp"
+                            android:textStyle="bold" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/line22"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/textToyota"
+                            android:layout_width="match_parent"
+                            android:layout_height="60dp"
+                            android:layout_margin="10dp"
+                            android:background="@drawable/button_stroke_dark_red_press_white"
+                            android:gravity="center"
+                            android:text="Toyota"
+                            android:textColor="@color/gray"
+                            android:textSize="20sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/line23"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/textUaz"
+                            android:layout_width="match_parent"
+                            android:layout_height="60dp"
+                            android:layout_margin="10dp"
+                            android:background="@drawable/button_stroke_dark_red_press_white"
+                            android:gravity="center"
+                            android:text="UAZ"
+                            android:textColor="@color/gray"
+                            android:textSize="20sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/line24"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/textVag"
+                            android:layout_width="match_parent"
+                            android:layout_height="60dp"
+                            android:layout_margin="10dp"
+                            android:background="@drawable/button_stroke_dark_red_press_white"
+                            android:gravity="center"
+                            android:text="VAG"
+                            android:textColor="@color/gray"
+                            android:textSize="20sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/line25"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <TextView
                             android:id="@+id/textVolvo"
-                            android:layout_width="100dp"
+                            android:layout_width="match_parent"
                             android:layout_height="60dp"
                             android:layout_margin="10dp"
                             android:background="@drawable/button_stroke_dark_red_press_white"
                             android:gravity="center"
                             android:text="Volvo"
                             android:textColor="@color/gray"
-                            android:textSize="15sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:id="@+id/textView26"
-                            android:layout_width="100dp"
-                            android:layout_height="60dp"
-                            android:layout_margin="10dp"
-                            android:background="@drawable/button_stroke_dark_red_press_white"
-                            android:gravity="center"
-                            android:text="__"
-                            android:textColor="@color/gray"
-                            android:textSize="15sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:id="@+id/textView27"
-                            android:layout_width="100dp"
-                            android:layout_height="60dp"
-                            android:layout_margin="10dp"
-                            android:background="@drawable/button_stroke_dark_red_press_white"
-                            android:gravity="center"
-                            android:text="__"
-                            android:textColor="@color/gray"
-                            android:textSize="15sp"
+                            android:textSize="20sp"
                             android:textStyle="bold" />
                     </LinearLayout>
 
@@ -467,13 +569,6 @@
         </LinearLayout>
 
     </LinearLayout>
-
-
-
-
-
-
-
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -2,4 +2,16 @@
     <string name="app_name">V_PROG_ELM327</string>
     <string name="Back">Назад</string>
     <string name="connect">Connect</string>
+    <string name="obd2">OBD2</string>
+    <string name="audi">Audi</string>
+    <string name="Glonass">Гланасс</string>
+    <string name="Radio">Радио</string>
+    <string name="SAS">Датчик положения руля</string>
+    <string name="Immo">Иммобилайзер</string>
+    <string name="BCM2">Кузовной блок 2</string>
+    <string name="BCM1">Кузовной блок 1</string>
+    <string name="ABS">АБС</string>
+    <string name="ECU">ЭБУ</string>
+    <string name="AirBag">Подушки безопасности</string>
+    <string name="Dashboard">Щиток приборов</string>
 </resources>
