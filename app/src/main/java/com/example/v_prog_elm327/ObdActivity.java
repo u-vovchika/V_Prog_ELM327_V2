@@ -102,6 +102,12 @@ public class ObdActivity extends AppCompatActivity {
         });
         // Отправка данных
         btnConnect.setOnClickListener(v -> connectToELM327());
+//        // Ждем ответа (можно добавить таймаут)
+//        try {
+//            Thread.sleep(200); // Даем адаптеру время на ответ
+//        } catch (InterruptedException e) {
+//            throw new RuntimeException(e);
+//        }
         scanBtn.setOnClickListener(v -> sendCommand("0100")); // Поиск ECU
         voltageBtn.setOnClickListener(v -> sendCommand("ATRV")); // Напряжение АКБ
 

@@ -68,7 +68,15 @@ public class MenuActivity extends AppCompatActivity {
         imageBluetooth.setImageResource(R.drawable.outline_bluetooth_disabled_24);
         imageBluetooth.setColorFilter(Color.GRAY);
 
-        /// //////////////////////////////////
+//        /// выбираем ОБД ObdActivity //////////////////////////////////
+//        textObd2.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Intent intent = new Intent(MenuActivity.this, ObdActivity.class);
+//                startActivity(intent);
+//            }
+//        });
+        /// выбираем ОБД BluetoothActivity //////////////////////////////////
         textObd2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -77,7 +85,7 @@ public class MenuActivity extends AppCompatActivity {
             }
         });
 
-
+        /// выбираем в меню Renault ////////////////////////////////////////////
         textRenault.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

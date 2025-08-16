@@ -1,114 +1,169 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/dark_blue"
-    android:orientation="vertical"
-    android:padding="26dp"
     tools:context=".MainActivity">
 
 
     <LinearLayout
-        android:id="@+id/container3"
-        android:layout_width="397dp"
-        android:layout_height="76dp"
-        android:gravity="center"
-        android:orientation="horizontal">
+        android:id="@+id/containerECU"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:orientation="vertical"
+        android:padding="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.231"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="MissingConstraints">
 
-        <ImageView
-            android:id="@+id/imageBluetooth"
-            android:layout_width="90dp"
-            android:layout_height="40dp"
-            android:background="@drawable/outline_bluetooth_disabled_24"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/receivedDataPower"
-            android:layout_width="128dp"
-            android:layout_height="50dp"
-            android:background="@drawable/button_stroke_dark_red_press_white"
+        <LinearLayout
+            android:id="@+id/container1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="данные"
-            android:textColor="@color/gray"
-            android:textSize="25sp"
-            android:textStyle="bold" />
+            android:orientation="horizontal">
 
-        <ImageView
-            android:id="@+id/imageViewLogo"
-            android:layout_width="192dp"
-            android:layout_height="47dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/vprog" />
+            <ImageView
+                android:id="@+id/imageBluetooth"
+                android:layout_width="41dp"
+                android:layout_height="43dp"
+                android:background="@drawable/outline_bluetooth_disabled_24"
+                android:backgroundTint="@color/gray"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-    </LinearLayout>
+            <TextView
+                android:id="@+id/receivedDataPower"
+                android:layout_width="110dp"
+                android:layout_height="39dp"
+                android:padding="10dp"
+                android:background="@drawable/button_stroke_dark_red_press_white"
+                android:gravity="center"
+                android:text="данные"
+                android:textColor="@color/gray"
+                android:textSize="13sp"
+                android:textStyle="bold" />
 
+            <ImageView
+                android:id="@+id/imageViewLogo"
+                android:layout_width="141dp"
+                android:layout_height="match_parent"
+                android:layout_marginStart="5dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/vprog" />
 
+        </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/line1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:orientation="horizontal">
-
-        <Button
-            android:id="@+id/btnScanECU"
+        <LinearLayout
+            android:id="@+id/container2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/button_stroke_dark_red_press_white"
-            android:text="Поиск ECU (0100)"
-            android:textColor="@color/white" />
+            android:gravity="center"
+            android:orientation="horizontal">
 
-    </LinearLayout>
+            <LinearLayout
+                android:id="@+id/line1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btnScanECU"
+                    android:layout_width="300dp"
+                    android:layout_height="50dp"
+                    android:layout_margin="5dp"
+                    android:background="@drawable/button_stroke_dark_red_press_white"
+                    android:drawableLeft="@drawable/twotone_directions_car_24"
+                    android:drawableTint="@color/gray"
+                    android:paddingStart="20dp"
+                    android:text="Поиск ECU"
+                    android:textColor="@color/white"
+
+                    />
+
+            </LinearLayout>
+        </LinearLayout>
 
 
-    <LinearLayout
-        android:id="@+id/line1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:orientation="horizontal"
-        tools:ignore="DuplicateIds">
-
-        <Button
-            android:id="@+id/btnGetVoltage"
+        <LinearLayout
+            android:id="@+id/container3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/button_stroke_dark_red_press_white"
-            android:text="Напряжение АКБ (ATRV)"
-            android:textColor="@color/white" />
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:id="@+id/line2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btnGetVoltage"
+                    android:layout_width="300dp"
+                    android:layout_height="50dp"
+                    android:layout_margin="5dp"
+                    android:background="@drawable/button_stroke_dark_red_press_white"
+                    android:text="Напряжение АКБ (ATRV)"
+                    android:textColor="@color/white" />
+
+            </LinearLayout>
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:id="@+id/container4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:id="@+id/line3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/receivedDataTextView"
+                    android:layout_width="300dp"
+                    android:layout_height="50dp"
+                    android:layout_margin="5dp"
+                    android:background="@drawable/button_stroke_dark_red_press_white"
+                    android:gravity="center"
+                    android:text="данные"
+                    android:textColor="@color/gray"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+
+        <ListView
+            android:id="@+id/logListView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="15dp"
+            android:background="@color/white"
+            app:layout_constraintTop_toBottomOf="@+id/containerECU" />
 
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/line1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:orientation="horizontal"
-        tools:ignore="DuplicateIds">
-    <TextView
-        android:id="@+id/receivedDataTextView"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:background="@drawable/button_stroke_dark_red_press_white"
-        android:gravity="center"
-        android:text="данные"
-        android:textColor="@color/gray"
-        android:textSize="25sp"
-        android:textStyle="bold" />
-
-    </LinearLayout>
-    <ListView
-        android:id="@+id/logListView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="16dp"
-        android:background="@color/white" />
 
 
-</LinearLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
