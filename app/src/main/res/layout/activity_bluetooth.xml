@@ -78,16 +78,26 @@
 
                 <Button
                     android:id="@+id/btnScanECU"
-                    android:layout_width="300dp"
-                    android:layout_height="50dp"
+                    android:layout_width="145dp"
+                    android:layout_height="wrap_content"
                     android:layout_margin="5dp"
                     android:background="@drawable/button_stroke_dark_red_press_white"
                     android:drawableLeft="@drawable/twotone_directions_car_24"
                     android:drawableTint="@color/gray"
-                    android:paddingStart="20dp"
+                    android:gravity="center"
+                    android:paddingStart="10dp"
                     android:text="Поиск ECU"
-                    android:textColor="@color/white"
-
+                    android:textColor="@color/white" />
+                <Button
+                    android:id="@+id/btnIdenECU"
+                    android:layout_width="145dp"
+                    android:layout_height="50dp"
+                    android:layout_margin="5dp"
+                    android:background="@drawable/button_stroke_dark_red_press_white"
+                    android:gravity="center"
+                    android:paddingStart="10dp"
+                    android:text="Идент"
+                    android:textColor="@color/gray"
                     />
 
             </LinearLayout>
@@ -109,13 +119,22 @@
                 android:orientation="horizontal">
 
                 <Button
-                    android:id="@+id/btnGetVoltage"
-                    android:layout_width="300dp"
+                    android:id="@+id/btnReadDTC"
+                    android:layout_width="145dp"
                     android:layout_height="50dp"
                     android:layout_margin="5dp"
                     android:background="@drawable/button_stroke_dark_red_press_white"
-                    android:text="Напряжение АКБ (ATRV)"
-                    android:textColor="@color/white" />
+                    android:text="Чтение DTC"
+                    android:textColor="@color/gray" />
+
+                <Button
+                    android:id="@+id/btnClearDTC"
+                    android:layout_width="145dp"
+                    android:layout_height="50dp"
+                    android:layout_margin="5dp"
+                    android:background="@drawable/button_stroke_dark_red_press_white"
+                    android:text="Чтение DTC"
+                    android:textColor="@color/gray" />
 
             </LinearLayout>
         </LinearLayout>
