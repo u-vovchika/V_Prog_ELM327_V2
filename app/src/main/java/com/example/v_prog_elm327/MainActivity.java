@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
                 finish(); // Закрываем SplashActivity
             }
-        }, 5000); // Задержка в 3 секунды
+        }, 4000); // Задержка в 3 секунды
 
     }
 }

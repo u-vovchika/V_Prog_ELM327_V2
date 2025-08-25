@@ -24,22 +24,17 @@
                 android:id="@+id/container3"
                 android:layout_width="357dp"
                 android:layout_height="match_parent"
-                android:gravity="center"
+                android:layout_marginTop="20dp"
+                android:gravity="right"
                 android:orientation="horizontal">
 
-                <ImageView
-                    android:id="@+id/imageBluetooth"
-                    android:layout_width="128dp"
-                    android:layout_height="40dp"
-                    android:background="@drawable/outline_bluetooth_disabled_24"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+
 
                 <ImageView
                     android:id="@+id/imageViewLogo"
-                    android:layout_width="290dp"
-                    android:layout_height="60dp"
-
+                    android:layout_width="180dp"
+                    android:layout_height="50dp"
+                    android:layout_margin="5dp"
                     android:foregroundGravity="right"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
@@ -61,12 +56,12 @@
                         android:id="@+id/line1"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:gravity="center"
+                        android:gravity="left"
                         android:orientation="horizontal">
 
                         <TextView
                             android:id="@+id/textObd2"
-                            android:layout_width="match_parent"
+                            android:layout_width="280dp"
                             android:layout_height="50dp"
                             android:layout_margin="5dp"
                             android:background="@drawable/button_stroke_dark_red_press_white"
@@ -75,6 +70,36 @@
                             android:textColor="@color/white"
                             android:textSize="25sp"
                             android:textStyle="bold" />
+
+
+                        <ImageView
+                            android:id="@+id/imageQuestion"
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:layout_margin="5dp"
+                            android:foregroundGravity="right"
+                            android:background="@drawable/button_stroke_dark_red_press_white"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:srcCompat="@drawable/outline_question_mark_24"
+                            app:tint="@color/green"
+                            android:paddingEnd="10dp"
+                            android:paddingStart="10dp"
+                            />
+
+<!--                        <ImageView-->
+<!--                            android:id="@+id/imageQuestion"-->
+<!--                            android:layout_width="40dp"-->
+<!--                            android:layout_height="40dp"-->
+<!--                            android:layout_marginTop="10dp"-->
+<!--                            android:background="@drawable/outline_question_mark_24"-->
+<!--                            android:backgroundTint="@color/green"-->
+<!--                            app:layout_constraintEnd_toEndOf="parent"-->
+<!--                            app:layout_constraintTop_toTopOf="parent" />-->
+
+
+
+
                     </LinearLayout>
 
                     <LinearLayout

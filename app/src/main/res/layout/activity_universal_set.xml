@@ -254,7 +254,7 @@
                         android:layout_margin="5dp"
                         android:background="@drawable/button_stroke_dark_red_press_white"
                         android:gravity="center"
-                        android:text="@string/Glonass"
+                        android:text="@string/glonass"
                         android:textColor="@color/gray"
                         android:textSize="20sp"
                         android:textStyle="bold" />

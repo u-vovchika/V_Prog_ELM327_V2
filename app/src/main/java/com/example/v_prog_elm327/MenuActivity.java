@@ -32,10 +32,8 @@ import java.util.UUID;
 
 public class MenuActivity extends AppCompatActivity {
 
-    ImageView imageBluetooth;
+    ImageView imageQuestion;
     TextView textObd2,textRenault;
-
-
 
     SharedPreferences sharedPreferences;
     private static final String SHARED_PREV_MODEL = "mypref";
@@ -51,11 +49,17 @@ public class MenuActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
 
-        imageBluetooth = findViewById(R.id.imageBluetooth);
+        imageQuestion = findViewById(R.id.imageQuestion);
         textObd2 = findViewById(R.id.textObd2);
         textRenault = findViewById(R.id.textRenault);
 
-
+        imageQuestion.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MenuActivity.this,Help_online.class);
+                startActivity(intent);
+            }
+        });
 
         //////////////////////////////////////////////////////////////////////
         sharedPreferences = getSharedPreferences(SHARED_PREV_MODEL, MODE_PRIVATE);
@@ -65,8 +69,6 @@ public class MenuActivity extends AppCompatActivity {
             startActivity(intent);
         }
 
-        imageBluetooth.setImageResource(R.drawable.outline_bluetooth_disabled_24);
-        imageBluetooth.setColorFilter(Color.GRAY);
 
 //        /// выбираем ОБД ObdActivity //////////////////////////////////
 //        textObd2.setOnClickListener(new View.OnClickListener() {
