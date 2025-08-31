@@ -175,8 +175,9 @@
             android:id="@+id/logListView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_margin="15dp"
-            android:background="@color/white"
+            android:layout_margin="10dp"
+            android:textColor="@color/white"
+            android:background="@color/dark_blue"
             app:layout_constraintTop_toBottomOf="@+id/containerECU" />
 
     </LinearLayout>

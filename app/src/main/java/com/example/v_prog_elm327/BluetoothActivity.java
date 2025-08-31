@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Set;
 import java.util.UUID;
 //import java.util.logging.Handler;
@@ -143,7 +144,6 @@ public class BluetoothActivity extends AppCompatActivity {
         btnScanECU.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 ((ArrayAdapter) logListView.getAdapter()).clear();
                 receivedDataPower.setText("");
                 receivedDataTextView.setText("");
@@ -161,12 +161,22 @@ public class BluetoothActivity extends AppCompatActivity {
                                                     sendCommand("0100\r", response12 -> {  /// Запрос PIDs
 
 
+                                                        sendCommand("0900\r", response13 -> {  /// Запрос PIDs
+                                                            sendCommand("0902\r", response14 -> {  /// Запрос PIDs
+                                                                sendCommand("0904\r", response15 -> {  /// Запрос PIDs
+                                                                    sendCommand("0906\r", response16 -> {  /// Запрос PIDs
+
+
+                                                                    });
+                                                                });
+                                                            });
+                                                        });
                                                     });
                                                 });
                                             });
                                         });
-                                        //   });
-                                        // });
+                                        //  });
+                                        //  });
                                     });
                                 });
                             });
@@ -303,7 +313,33 @@ public class BluetoothActivity extends AppCompatActivity {
         }
     }
 
+    private String convertHexToAscii(String hexStr) {
+        try {
+            byte[] bytes = new byte[hexStr.length() / 2];
+            for (int i = 0; i < bytes.length; i++) {
+                int index = i * 2;
+                bytes[i] = (byte) Integer.parseInt(hexStr.substring(index, index + 2), 16);
+            }
+            return new String(bytes, "UTF-8"); // или "ISO-8859-1"
+        } catch (Exception e) {
+            return hexStr; // возвращаем оригинал при ошибке
+        }
+    }
 
+    private String extractVinFromResponse(String responseStr) {
+        // Удаляем все пробелы и непечатные символы
+        String clean = responseStr.replaceAll("\\s+", "");
+
+        // Извлекаем HEX данные и конвертируем в ASCII
+        String hexData = clean.replace("7EB", "");
+
+
+        return convertHexToAscii(hexData);
+        //return convertHexToAscii(clean);
+    }
+
+
+    private StringBuilder vinBuilder = new StringBuilder();
     @SuppressLint("UseCompatTextViewDrawableApis")
     private void sendCommand(String command, ResponseCallback callback) {
         if (outputStream == null) {
@@ -377,23 +413,93 @@ public class BluetoothActivity extends AppCompatActivity {
                         addLog("Напряжение: " + responseStr);
                     }
 
-
+/// /////////////////////////////////////////////////////////////////////////////////////////////////
                     if (command.startsWith("0900\r")) {
                         if (responseStr.startsWith("7E8")) {
-                            addLog(" P/N:  " + responseStr);
-                            btnScanECU.setCompoundDrawableTintList(ColorStateList.valueOf(Color.YELLOW));
-
-                            filterResponse(responseStr);
-                            receivedDataTextView.setText(responseStr);
-                            String[] pNum = responseStr.split(" ");
-                            receivedDataTextView.setText(responseStr + " !!!");
-
-                            addLog("  >1> " + words[4] + "  >2> " + words[5] + "  >3> " + words[6] + "  >4> " + words[7]);
-
+                            String[] wordss = responseStr.split(" ");
+                            StringBuilder sVim = new StringBuilder(Arrays.toString(wordss));
+                            for (int i = 6;  i < wordss.length; i++) {
+                                if (!wordss[i].startsWith("7E8") &&
+                                        !wordss[i].startsWith("21") &&
+                                        !wordss[i].startsWith("22")) {
+                                    // Удаляем ВСЕ вхождения "7E8" из строки
+                                    String cleanedString = wordss[i].replace("7E8", "");
+                                    vinBuilder.append(extractVinFromResponse(cleanedString));
+                                }
+                            }
+                            String fullNum = vinBuilder.toString();
+                            receivedDataTextView.setText("P/N: " + fullNum);
+                            vinBuilder.setLength(0);
+                            addLog("Part Number: " + fullNum);
                         } else {
-                            addLog(" P/N - N/A");
-                            receivedDataTextView.setText(responseStr + " !!!!!!");
-                            btnScanECU.setCompoundDrawableTintList(ColorStateList.valueOf(Color.GRAY));
+                            addLog("Part Number - N/A");
+                            receivedDataTextView.setText(responseStr + " - 0900");
+                        }
+                    }
+
+
+                    if (command.startsWith("0902\r")) {
+                        if (responseStr.startsWith("7E8")) {
+                            String[] wordss = responseStr.split(" ");
+                            StringBuilder sVim = new StringBuilder(Arrays.toString(wordss));
+                            for (int i = 6;  i < wordss.length; i++) {
+                                if (!wordss[i].startsWith("7E8") &&
+                                        !wordss[i].startsWith("21") &&
+                                        !wordss[i].startsWith("22")) {
+                                    // Удаляем ВСЕ вхождения "7E8" из строки
+                                    String cleanedString = wordss[i].replace("7E8", "");
+                                    vinBuilder.append(extractVinFromResponse(cleanedString));
+                                }
+                            }
+                            String fullVin = vinBuilder.toString();
+                            receivedDataTextView.setText("VIN: " + fullVin);
+                            vinBuilder.setLength(0);
+                            addLog("VIN: " + fullVin);
+                        } else {
+                            addLog("VIN - N/A  - 0902");
+                            receivedDataTextView.setText(responseStr + " - 0902");
+                        }
+                    }
+
+                    if (command.startsWith("0904\r")) {
+                        if (responseStr.startsWith("7E8")) {
+                            String[] wordss = responseStr.split(" ");
+                            StringBuilder sVim = new StringBuilder(Arrays.toString(wordss));
+                            for (int i = 6;  i < wordss.length; i++) {
+                                if (!wordss[i].startsWith("7E8") &&
+                                        !wordss[i].startsWith("21") &&
+                                        !wordss[i].startsWith("22")) {
+                                    // Удаляем ВСЕ вхождения "7E8" из строки
+                                    String cleanedString = wordss[i].replace("7E8", "");
+                                    vinBuilder.append(extractVinFromResponse(cleanedString));
+                                }
+                            }
+                            String fullCalib = vinBuilder.toString();
+                            vinBuilder.setLength(0);
+                            addLog("Calibration ID: " + fullCalib);
+                        } else {
+                            addLog("Calibration ID - N/A");
+                        }
+                    }
+
+                    if (command.startsWith("0906\r")) {
+                        if (responseStr.startsWith("7E8")) {
+                            String[] wordss = responseStr.split(" ");
+                            StringBuilder sVim = new StringBuilder(Arrays.toString(wordss));
+                            for (int i = 6;  i < wordss.length; i++) {
+                                if (!wordss[i].startsWith("7E8") &&
+                                        !wordss[i].startsWith("21") &&
+                                        !wordss[i].startsWith("22")) {
+                                    // Удаляем ВСЕ вхождения "7E8" из строки
+                                    String cleanedString = wordss[i].replace("7E8", "");
+                                    vinBuilder.append(extractVinFromResponse(cleanedString));
+                                }
+                            }
+                            String fullReadiness = vinBuilder.toString();
+                            vinBuilder.setLength(0);
+                            addLog("I/M Readiness: " + fullReadiness);
+                        } else {
+                            addLog("I/M Readiness - N/A");
                         }
                     }
 

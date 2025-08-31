@@ -2,6 +2,7 @@ package com.example.v_prog_elm327;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -73,6 +74,7 @@ private Button button_back_univ;
 
     }
     private void fetchDataFromServer(String uid) {
+        textViewResult.setTextColor(Color.WHITE);
         String url = "http://u-vovchikaweb.ru/IPROG_PRO_HELP/" + uid;
         //String url = "http://u-vovchikaweb.ru/IPROG_PRO_HELP/01304045";
 
@@ -87,7 +89,9 @@ private Button button_back_univ;
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        textViewResult.setText("Ошибка подключения: " + e.getMessage());
+                        //textViewResult.setText("Ошибка подключения: " + e.getMessage());
+                        textViewResult.setText("Ошибка подключения: ");
+                        textViewResult.setTextColor(Color.RED);
                     }
                 });
             }
@@ -102,15 +106,15 @@ private Button button_back_univ;
                     public void run() {
                         if (statusCode == 200) {
                             textViewResult.setText("Статус: 200 OK\n\n" + responseBody);
-                            Toast.makeText(Help_online.this, uid + " найден.", Toast.LENGTH_SHORT).show();
                         } else if (statusCode == 404) {
                             textViewResult.setText("Статус: 404\nВ базе нет такого номера(((");
-                            Toast.makeText(Help_online.this, "В базе нет такого номера", Toast.LENGTH_SHORT).show();
+                            textViewResult.setTextColor(Color.RED);
                         } else if (statusCode == 500) {
                             textViewResult.setText("Статус: 500\nInvalid Script");
-                            Toast.makeText(Help_online.this, "Invalid Script", Toast.LENGTH_SHORT).show();
+                            textViewResult.setTextColor(Color.RED);
                         } else {
                             textViewResult.setText("Неизвестный статус: " + statusCode + "\n" + responseBody);
+                            textViewResult.setTextColor(Color.BLUE);
                         }
                     }
                 });
@@ -118,6 +122,7 @@ private Button button_back_univ;
         });
     }
     private void fetchDataFromServerUpdate() {
+        textViewResult.setTextColor(Color.WHITE);
         String url = "http://u-vovchikaweb.ru/WRITE_TEST/Update_Iprog_u_vovchika.txt";
         //String url = "http://u-vovchikaweb.ru/IPROG_PRO_HELP/01304045";
 
@@ -132,7 +137,9 @@ private Button button_back_univ;
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        textViewResult.setText("Ошибка подключения: " + e.getMessage());
+                        ///textViewResult.setText("Ошибка подключения: " + e.getMessage());
+                        textViewResult.setText("Ошибка подключения: ");
+                        textViewResult.setTextColor(Color.RED);
                     }
                 });
             }
@@ -149,10 +156,13 @@ private Button button_back_univ;
                             textViewResult.setText("Статус: 200 OK\n\n" + responseBody);
                         } else if (statusCode == 404) {
                             textViewResult.setText("Статус: 404\nВ базе нет такого номера(((");
+                            textViewResult.setTextColor(Color.RED);
                         } else if (statusCode == 500) {
                             textViewResult.setText("Статус: 500\nInvalid Script");
+                            textViewResult.setTextColor(Color.RED);
                         } else {
                             textViewResult.setText("Неизвестный статус: " + statusCode + "\n" + responseBody);
+                            textViewResult.setTextColor(Color.BLUE);
                         }
                     }
                 });
