@@ -2,16 +2,21 @@ package com.example.v_prog_elm327;
 
 import static android.service.controls.actions.ControlAction.isValidResponse;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
-import android.content.pm.PackageManager;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+
+import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.view.View;
@@ -23,7 +28,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import java.io.IOException;
@@ -31,15 +35,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
-//import java.util.logging.Handler;
-import java.util.function.Consumer;
-import java.util.logging.LogRecord;
-
-import android.os.Handler;
-import android.os.Looper;
 
 
 public class BluetoothActivity extends AppCompatActivity {
@@ -61,14 +60,18 @@ public class BluetoothActivity extends AppCompatActivity {
 
     // UUID для SPP (Serial Port Profile)
     private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
-    private static final String[] MAC_ADAPTER = {
-            "00:1D:A5:05:EE:47",// MAC-адрес вашего устройства Kingbolen
-            "66:1E:11:8D:ED:7D",//MAC-адрес вашего устройства КРАСНОГО АДАПТЕРА
-            "66:1E:11:8D:FC:E9",// MAC-адрес вашего устройства КРАСНОГО АДАПТЕРА от Ришата
-            "00:1D:A5:68:98:8A",// MAC-адрес вашего устройства сининего АДАПТЕРА
-            "00:1D:A5:00:0B:A1" // MAC-адрес вашего устройства БОЛЬШОЙ ЧЕРНЫЙ АДАПТЕРА
-    };
-    private static final String DEVICE_ADDRESS = MAC_ADAPTER[0]; // MAC-адрес вашего устройства Kingbolen
+//    private static final String[] MAC_ADAPTER = {
+//            "78:DB:2F:F7:9B:4A",  // MAC-адрес вашего устройства ЧЕРНЫЙ АДАПТЕРА vLinker MC
+//            "00:1D:A5:05:EE:47", // MAC-адрес вашего устройства Kingbolen
+//            "66:1E:11:8D:ED:7D", // MAC-адрес вашего устройства КРАСНОГО АДАПТЕРА
+//            "66:1E:11:8D:FC:E9", // MAC-адрес вашего устройства КРАСНОГО АДАПТЕРА от Ришата
+//            "00:1D:A5:68:98:8A", // MAC-адрес вашего устройства сининего АДАПТЕРА
+//            "00:1D:A5:00:0B:A1"  // MAC-адрес вашего устройства БОЛЬШОЙ ЧЕРНЫЙ АДАПТЕРА
+//    };
+//    private static final String DEVICE_ADDRESS = MAC_ADAPTER[0]; // MAC-адрес вашего устройства Kingbolen
+
+    private BluetoothDevice selectedDevice; // Выбранное устройство
+    private List<BluetoothDevice> availableDevices = new ArrayList<>();
 
     private Button btnScanECU, btnIdenECU, btnReadDTC, btnClearDTC;
     private ListView logListView;
@@ -110,9 +113,11 @@ public class BluetoothActivity extends AppCompatActivity {
 
         imageBluetooth.setColorFilter(Color.GRAY);
 
-        connectToELM327();
-        receivedDataPower.setOnClickListener(v -> connectToELM327());
+//        connectToELM327();
+//        receivedDataPower.setOnClickListener(v -> connectToELM327());
 
+        discoverBluetoothDevices();
+        receivedDataPower.setOnClickListener(v -> discoverBluetoothDevices());
         /// кнопка чтения идентов ECU
         btnIdenECU.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -213,7 +218,162 @@ public class BluetoothActivity extends AppCompatActivity {
 
     }
 
+    /// //////////////////////////////////////////////////////////////////////////////////
+// Метод для поиска и отображения доступных Bluetooth устройств
+    private void discoverBluetoothDevices() {
+        // Проверяем поддержку Bluetooth
+        if (bluetoothAdapter == null) {
+            Toast.makeText(this, "Bluetooth не поддерживается", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
+        // Проверяем, включен ли Bluetooth
+        if (!bluetoothAdapter.isEnabled()) {
+            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+            return;
+        }
+
+        // Очищаем предыдущий список устройств
+        availableDevices.clear();
+
+        // Получаем уже сопряженные устройства
+        Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
+        if (pairedDevices.size() > 0) {
+            availableDevices.addAll(pairedDevices);
+        }
+
+        // Показываем диалог выбора устройства
+        showDeviceSelectionDialog();
+    }
+
+    // Диалог для выбора Bluetooth устройства
+    private void showDeviceSelectionDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Выберите ELM327 адаптер");
+
+        // Создаем список имен устройств
+        List<String> deviceNames = new ArrayList<>();
+        for (BluetoothDevice device : availableDevices) {
+            deviceNames.add(device.getName() + "\n" + device.getAddress());
+        }
+
+        // Если устройств нет, показываем сообщение
+        if (deviceNames.isEmpty()) {
+            deviceNames.add("Устройства не найдены");
+        }
+
+        builder.setItems(deviceNames.toArray(new String[0]), (dialog, which) -> {
+            if (availableDevices.size() > which) {
+                selectedDevice = availableDevices.get(which);
+                connectToELM327(selectedDevice);
+            }
+        });
+
+        builder.setNegativeButton("Обновить", (dialog, which) -> {
+            // Запускаем поиск новых устройств
+            startDeviceDiscovery();
+        });
+
+        builder.setNeutralButton("Отмена", null);
+        builder.show();
+    }
+
+    // Метод для начала поиска устройств
+    private void startDeviceDiscovery() {
+        // Регистрируем BroadcastReceiver для обнаружения устройств
+        IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
+        registerReceiver(discoveryReceiver, filter);
+
+        // Также регистрируем завершение поиска
+        filter = new IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
+        registerReceiver(discoveryReceiver, filter);
+
+        // Начинаем поиск
+        if (bluetoothAdapter.isDiscovering()) {
+            bluetoothAdapter.cancelDiscovery();
+        }
+        bluetoothAdapter.startDiscovery();
+    }
+
+    private final BroadcastReceiver discoveryReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+
+            if (BluetoothDevice.ACTION_FOUND.equals(action)) {
+                // Устройство найдено
+                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                if (device != null && !availableDevices.contains(device)) {
+                    availableDevices.add(device);
+                }
+            } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
+                // Поиск завершен
+                unregisterReceiver(this);
+                showDeviceSelectionDialog();
+            }
+        }
+    };
+
+    // Переделанный метод подключения к ELM327
+    private void connectToELM327(BluetoothDevice device) {
+        if (device == null) {
+            Toast.makeText(this, "Устройство не выбрано", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        ((ArrayAdapter) logListView.getAdapter()).clear();
+
+        // Показываем индикатор подключения
+        imageBluetooth.setColorFilter(Color.YELLOW);
+        imageBluetooth.setImageResource(R.drawable.outline_bluetooth_connected_24);
+        receivedDataPower.setText("Подключение...");
+        receivedDataPower.setTextColor(Color.YELLOW);
+
+        new Thread(() -> {
+            try {
+                bluetoothSocket = device.createRfcommSocketToServiceRecord(MY_UUID);
+                bluetoothSocket.connect();
+                outputStream = bluetoothSocket.getOutputStream();
+                inputStream = bluetoothSocket.getInputStream();
+
+                runOnUiThread(() -> {
+                    imageBluetooth.setColorFilter(Color.GREEN);
+                    imageBluetooth.setImageResource(R.drawable.outline_bluetooth_connected_24);
+                    receivedDataPower.setText("Connect");
+                    receivedDataPower.setTextColor(Color.GRAY);
+                    Toast.makeText(this, "Подключено к " + device.getName(), Toast.LENGTH_SHORT).show();
+                });
+
+                Thread.sleep(1000);
+
+                // Сброс адаптера и отключение эхо
+                sendCommand("ATZ\rATE0\r", response -> {
+                    Thread.sleep(1000);
+                    sendCommand("ATE0\r", response2 -> {
+                        sendCommand("ATE0\r", response3 -> {
+                            sendCommand("STI\r", response4 -> {
+                                // addLog(" Адаптер: ");
+                            });
+                        });
+                    });
+                });
+
+            } catch (Exception e) {
+                runOnUiThread(() -> {
+                    imageBluetooth.setColorFilter(Color.RED);
+                    imageBluetooth.setImageResource(R.drawable.outline_bluetooth_disabled_24);
+                    receivedDataPower.setText("Ошибка подключения");
+                    receivedDataPower.setTextColor(Color.RED);
+                    btnScanECU.setCompoundDrawableTintList(ColorStateList.valueOf(Color.GRAY));
+                    Toast.makeText(this, "Ошибка подключения: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
+                Log.e("Bluetooth", "Ошибка подключения", e);
+            }
+        }).start();
+    }
+
+/// //////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Фильтрация ответа
     private String filterResponse(String response) {
         return response.replaceAll("\r", "")
@@ -241,42 +401,6 @@ public class BluetoothActivity extends AppCompatActivity {
             return vin.toString().trim();
         } catch (Exception e) {
             return "VIN parse error: " + e.getMessage();
-        }
-    }
-
-
-    private void connectToELM327() {
-        BluetoothDevice device = bluetoothAdapter.getRemoteDevice(DEVICE_ADDRESS);
-        try {
-            bluetoothSocket = device.createRfcommSocketToServiceRecord(MY_UUID);
-            bluetoothSocket.connect();
-            outputStream = bluetoothSocket.getOutputStream();
-            inputStream = bluetoothSocket.getInputStream();
-            imageBluetooth.setColorFilter(Color.GREEN);
-            imageBluetooth.setImageResource(R.drawable.outline_bluetooth_connected_24);
-            Toast.makeText(this, "Подключено", Toast.LENGTH_SHORT).show();
-            receivedDataPower.setText("Connect");
-            receivedDataPower.setTextColor(Color.GREEN);
-
-            Thread.sleep(200);
-            /// сброс адаптера и отключение эхо ////////////////////////
-            sendCommand("ATZ\r", response -> {
-                sendCommand("ATE0\r", response2 -> {
-                    sendCommand("STI\r", response3 -> {
-                        // addLog(" Адаптер: ");
-                    });
-                });
-            });
-
-
-        } catch (Exception e) {
-            imageBluetooth.setColorFilter(Color.GRAY);
-            imageBluetooth.setImageResource(R.drawable.outline_bluetooth_disabled_24);
-            receivedDataPower.setText("No adapter");
-            receivedDataPower.setTextColor(Color.GRAY);
-            btnScanECU.setCompoundDrawableTintList(ColorStateList.valueOf(Color.GRAY));
-            Log.e("Bluetooth", "Ошибка подключения", e);
-            Toast.makeText(this, "Ошибка подключения", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -324,7 +448,7 @@ public class BluetoothActivity extends AppCompatActivity {
     }
 
     interface ResponseCallback {
-        void onResponse(String response);
+        void onResponse(String response) throws InterruptedException;
     }
 
     // Парсинг поддерживаемых PIDs
@@ -391,7 +515,7 @@ public class BluetoothActivity extends AppCompatActivity {
                 int bytes;
 
                 // Ждем ответа (можно добавить таймаут)
-                Thread.sleep(200); // Даем адаптеру время на ответ
+                Thread.sleep(500); // Даем адаптеру время на ответ
                 while (inputStream.available() > 0) {
                     bytes = inputStream.read(buffer);
                     response.append(new String(buffer, 0, bytes));
@@ -409,6 +533,16 @@ public class BluetoothActivity extends AppCompatActivity {
 
                     /// ответ информация об адапторе при коннекте с адаптером
                     if (command.startsWith("STI")) {
+
+                        if (responseStr.contains(">")) {
+                            receivedDataPower.setText("Connect");
+                            receivedDataPower.setTextColor(Color.GREEN);
+                            Toast.makeText(this, "Adapter connect !!!", Toast.LENGTH_SHORT).show();
+                        } else {
+                            receivedDataPower.setText("No Connect");
+                            receivedDataPower.setTextColor(Color.GRAY);
+                            addLog("No Connect ELM327" + responseStr);
+                        }
                         //receivedDataTextView.setText(words[0]);
                     }
                     if (command.startsWith("ATAR")) {
@@ -445,10 +579,10 @@ public class BluetoothActivity extends AppCompatActivity {
                     if (command.startsWith("04\r")) {
                         if (responseStr.startsWith("7E8")) {
                             String[] wordss = responseStr.split(" ");
-                            if(Objects.equals(wordss[2], "44")){
-                                addLog("Erase DTC ... OK." );
+                            if (Objects.equals(wordss[2], "44")) {
+                                addLog("Erase DTC ... OK.");
                             } else {
-                                addLog("Erase DTC ... ERROR." );
+                                addLog("Erase DTC ... ERROR.");
                             }
                         } else {
                             addLog("Erase DTC - N/A");
@@ -460,7 +594,7 @@ public class BluetoothActivity extends AppCompatActivity {
                             String[] wordss = responseStr.split(" ");
                             if (wordss.length > 5) {
                                 addLog("P" + wordss[4] + wordss[5]);
-                            } else{
+                            } else {
                                 addLog("DTC ... No Errors.");
                             }
                         } else {
@@ -581,17 +715,28 @@ public class BluetoothActivity extends AppCompatActivity {
                         }
                     }
 /// ///////////////////////////////////////////////////////////////////////////////////////////////////
-
-
+                    String[] pid;
                     if (command.startsWith("0100\r")) {
-                        if (responseStr.startsWith("SEARCHING...\r7E8")) {
-                            addLog(" ECU Connect" + responseStr);
+                        //if (responseStr.startsWith("SEARCHING...\r7E8")) {
+                        if (responseStr.startsWith("SEARCHING")) {
+
+                            //addLog("ECU Connect" + responseStr);
                             btnScanECU.setCompoundDrawableTintList(ColorStateList.valueOf(Color.YELLOW));
                             btnIdenECU.setTextColor(Color.WHITE);
                             btnReadDTC.setTextColor(Color.WHITE);
                             btnClearDTC.setTextColor(Color.WHITE);
                             filterResponse(responseStr);
-                            String[] pid = responseStr.split(" ");
+                            pid = responseStr.split(" ");
+
+                            if (!Objects.equals(pid[2], "41")) {
+                                addLog("ECU No Connect 1");
+                                btnIdenECU.setTextColor(Color.GRAY);
+                                btnReadDTC.setTextColor(Color.GRAY);
+                                btnClearDTC.setTextColor(Color.GRAY);
+                                btnScanECU.setCompoundDrawableTintList(ColorStateList.valueOf(Color.GRAY));
+                                return;
+                            }
+                            addLog("ECU Connect OK.");
                             // Вызов функции для анализа поддерживаемых PID
                             if (pid.length >= 8) {
                                 analyzeSupportedPIDs(pid[4], pid[5], pid[6], pid[7]);
@@ -599,24 +744,34 @@ public class BluetoothActivity extends AppCompatActivity {
                                 addLog(" Недостаточно данных для анализа PID");
                             }
                         } else if (responseStr.startsWith("7E8")) {
+                            pid = responseStr.split(" ");
+                            if (!Objects.equals(pid[2], "41")) {
+                                addLog("ECU No Connect");
+                                btnIdenECU.setTextColor(Color.GRAY);
+                                btnReadDTC.setTextColor(Color.GRAY);
+                                btnClearDTC.setTextColor(Color.GRAY);
+                                btnScanECU.setCompoundDrawableTintList(ColorStateList.valueOf(Color.GRAY));
+                                return;
+                            }
+                            addLog("ECU Connect OK.");
                             String[] wordss = responseStr.split(" ");
-                            //addLog("Protocol ECU: " + Integer.parseInt(wordss[1]));
-                            //getIdEcuDescription(Integer.parseInt(wordss[1])); /// определяем протокол
                             addLog("ECU address/CAN id: " + wordss[0] + "\n");
-                            //btnScanECU.setCompoundDrawableTintList(ColorStateList.valueOf(Color.YELLOW));
                             btnIdenECU.setTextColor(Color.WHITE);
                             btnReadDTC.setTextColor(Color.WHITE);
                             btnClearDTC.setTextColor(Color.WHITE);
                             filterResponse(responseStr);
-                            String[] pid = responseStr.split(" ");
+                            //receivedDataTextView.setText(responseStr);
+                            pid = responseStr.split(" ");
+                            //receivedDataTextView.setText(pid[0]);
                         } else {
-                            addLog("ECU No Connect");
+                            addLog("ECU No Connect 2");
                             btnIdenECU.setTextColor(Color.GRAY);
                             btnReadDTC.setTextColor(Color.GRAY);
                             btnClearDTC.setTextColor(Color.GRAY);
                             btnScanECU.setCompoundDrawableTintList(ColorStateList.valueOf(Color.GRAY));
                             return;
                         }
+
                     }
 
                     if (command.startsWith("ATDP\r")) {
@@ -642,7 +797,11 @@ public class BluetoothActivity extends AppCompatActivity {
                     }
 
                     if (callback != null) {
-                        callback.onResponse(responseStr);
+                        try {
+                            callback.onResponse(responseStr);
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
                     }
                 });
 
