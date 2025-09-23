@@ -2,6 +2,7 @@ package com.example.v_prog_elm327;
 
 import static android.service.controls.actions.ControlAction.isValidResponse;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
@@ -13,12 +14,14 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -27,6 +30,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.RequiresPermission;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
@@ -47,13 +51,10 @@ public class BluetoothActivity extends AppCompatActivity {
     private static final int REQUEST_BLUETOOTH_SCAN = 3;
     private static final int REQUEST_BLUETOOTH_CONNECT = 4;
     private static final int REQUEST_LOCATION = 5;
-
-
     private BluetoothAdapter bluetoothAdapter;
     private BluetoothSocket bluetoothSocket;
     private OutputStream outputStream;
     private InputStream inputStream;
-
     private ArrayAdapter<String> devicesAdapter;
     private ArrayList<String> devicesList = new ArrayList<>();
     private ArrayList<BluetoothDevice> discoveredDevices = new ArrayList<>();
@@ -71,9 +72,9 @@ public class BluetoothActivity extends AppCompatActivity {
 //    private static final String DEVICE_ADDRESS = MAC_ADAPTER[0]; // MAC-адрес вашего устройства Kingbolen
 
     private BluetoothDevice selectedDevice; // Выбранное устройство
-    private List<BluetoothDevice> availableDevices = new ArrayList<>();
+    private final List<BluetoothDevice> availableDevices = new ArrayList<>();
 
-    private Button btnScanECU, btnIdenECU, btnReadDTC, btnClearDTC;
+    private Button btnDataECU, btnIdenECU, btnReadDTC, btnClearDTC;
     private ListView logListView;
     private TextView receivedDataPower;
     private ArrayAdapter<String> logAdapter;
@@ -81,6 +82,7 @@ public class BluetoothActivity extends AppCompatActivity {
     private Handler handler = new Handler(Looper.getMainLooper());
     ImageView imageBluetooth;
 
+    @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -89,137 +91,182 @@ public class BluetoothActivity extends AppCompatActivity {
         logListView = findViewById(R.id.logListView);
         logAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, logMessages);
         logListView.setAdapter(logAdapter);
-        btnScanECU = findViewById(R.id.btnScanECU);
+        btnDataECU = findViewById(R.id.btnDataECU);
         btnIdenECU = findViewById(R.id.btnIdenECU);
-
         btnReadDTC = findViewById(R.id.btnReadDTC);
         btnClearDTC = findViewById(R.id.btnClearDTC);
-
         logListView = findViewById(R.id.logListView);
         receivedDataPower = findViewById(R.id.receivedDataPower);
         imageBluetooth = findViewById(R.id.imageBluetooth);
 
 
-        btnIdenECU.setTextColor(Color.GRAY);
+        btnDataECU.setTextColor(Color.GRAY);
         ((ArrayAdapter) logListView.getAdapter()).clear();
 
         // Получаем Bluetooth адаптер
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        // Проверка поддержки Bluetooth
-        if (bluetoothAdapter == null) {
-            Toast.makeText(this, "Bluetooth не поддерживается", Toast.LENGTH_LONG).show();
-            return;
-        }
-
         imageBluetooth.setColorFilter(Color.GRAY);
 
-//        connectToELM327();
-//        receivedDataPower.setOnClickListener(v -> connectToELM327());
-
+        /// подключение Bluetooth /////////////////////////////
         discoverBluetoothDevices();
         receivedDataPower.setOnClickListener(v -> discoverBluetoothDevices());
+
+        receivedDataPower.setText("");
         /// кнопка чтения идентов ECU
         btnIdenECU.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((ArrayAdapter) logListView.getAdapter()).clear();
-
-                sendCommand("0100\r", response12 -> {  /// Запрос PIDs
-                    sendCommand("ATDP\r", response122 -> {  /// Запрос PIDs
-
-                        sendCommand("0900\r", response13 -> {  /// Запрос PIDs
-                            sendCommand("0902\r", response14 -> {  /// Запрос PIDs
-                                sendCommand("0904\r", response15 -> {  /// Запрос PIDs
-                                    sendCommand("0906\r", response16 -> {  /// Запрос PIDs
-                                        sendCommand("1A90\r", response17 -> {  /// Запрос PIDs
-
-                                        });
-                                    });
-                                });
-                            });
-                        });
-                    });
-                });
+                addLog("🔍 Ident ECU ...");
+                readIden();
             }
         });
+
         /// кнопка чтение ошибок
         btnReadDTC.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((ArrayAdapter) logListView.getAdapter()).clear();
-                sendCommand("0100\r", response12 -> {  /// Запрос PIDs
-                    sendCommand("ATAR\r", response122 -> {  /// Запрос PIDs
-                        sendCommand("03\r", response17 -> {  /// Запрос PIDs
-                            sendCommand("07\r", response18 -> {  /// Read DTC
-                                sendCommand("0A\r", response19 -> {  /// Запрос PIDs
-
-                                });
-                            });
-                        });
-                    });
-                });
+                addLog("🔍 Read DTC ...");
+                readDtc();
             }
         });
+
         /// кнопка  стирания ошибок
         btnClearDTC.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((ArrayAdapter) logListView.getAdapter()).clear();
-                sendCommand("0100\r", response12 -> {  /// Запрос PIDs
-                    sendCommand("ATAR\r", response122 -> {  /// Запрос PIDs
-                        sendCommand("04\r", response17 -> {  /// Clear DTC
-
-                        });
-                    });
-                });
+                addLog("🧹 Erase DTC ...");
+                clearDTC();
             }
         });
+
         /// /кнопка поиск ECU
-        btnScanECU.setOnClickListener(new View.OnClickListener() {
+        btnDataECU.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 ((ArrayAdapter) logListView.getAdapter()).clear();
-                receivedDataPower.setText("");
-                sendCommand("ATE0\r", response -> { /// отключение эхо
-                    sendCommand("ATI\r", response2 -> { /// версия прошивки
-                        sendCommand("AT@SN\r", response3 -> { /// Серийный номер адаптера:
-                            sendCommand("ATRV\r", response4 -> { /// напряжение на адаптере
-                                sendCommand("ATH1\r", response5 -> { /// вкл-е отобр-я CAN-сообщений
-                                    sendCommand("ATSP0\r", response6 -> { /// автовыбор протокола
-                                        //sendCommand("ATM0\r", response7 -> {    ////вывод ответов без пробелов
-                                        //sendCommand("ATS0\r", response8 -> {    //// компактный режим
-                                        sendCommand("ATAT1\r", response9 -> {   /// вкл-е таймаут
-                                            sendCommand("ATAL\r", response10 -> {  /// /разрешение длинных сообщений
-                                                sendCommand("ATST64\r", response11 -> {  /// 64 мс макс.время ожидания
-                                                    sendCommand("0100\r", response12 -> {  /// Запрос PIDs
-                                                        sendCommand("0900\r", response13 -> {  /// Запрос PIDs
-                                                            sendCommand("0902\r", response14 -> {  /// Запрос PIDs
-                                                                sendCommand("0904\r", response15 -> {  /// Запрос PIDs
-                                                                    sendCommand("0906\r", response16 -> {  /// Запрос PIDs
-
-                                                                    });
-                                                                });
-                                                            });
-                                                        });
-                                                    });
-                                                });
-                                            });
-                                        });
-                                        //  });
-                                        //  });
-                                    });
-                                });
-                            });
-                        });
-                    });
+                //addLog("🔍 Connect ECU ...");
+                sendCommand("01421\r", response17 -> {  /// Clear DTC
+                    readKm();
                 });
             }
         });
 
     }
 
+
+    private void scanECU() {
+        ((ArrayAdapter) logListView.getAdapter()).clear();
+        sendCommand("ATE0\r", responseATE0 -> { /// отключение эхо
+            sendCommand("ATI\r", responseATI -> { /// версия прошивки
+                sendCommand("AT@SN\r", responseAT_SN -> { /// Серийный номер адаптера:
+                    sendCommand("ATRV\r", responseATRV -> { /// напряжение на адаптере
+                        sendCommand("ATH1\r", responseATH1 -> { /// вкл-е отобр-я CAN-сообщений
+                            sendCommand("ATSP0\r", responseATSP0 -> { /// автовыбор протокола
+                                sendCommand("ATAT1\r", responseATAT1 -> {   /// вкл-е таймаут
+                                    sendCommand("ATAL\r", responseATAL -> {  /// /разрешение длинных сообщений
+                                        sendCommand("ATST64\r", responseATST64 -> {  /// 64 мс макс.время ожидания
+                                            sendCommand("0100\r", response0100 -> {  /// Запрос PIDs
+
+                                            });
+                                        });
+                                    });
+                                });
+                            });
+                        });
+                    });
+                });
+            });
+        });
+    }
+
+    private void clearDTC() {
+        ((ArrayAdapter) logListView.getAdapter()).clear();
+        sendCommand("0100\r", response12 -> {  /// Запрос PIDs
+            sendCommand("ATAR\r", response122 -> {  /// Запрос PIDs
+                sendCommand("04\r", response17 -> {  /// Clear DTC
+
+                });
+            });
+        });
+    }
+
+    private void readDtc() {
+        ((ArrayAdapter) logListView.getAdapter()).clear();
+        sendCommand("0100\r", response12 -> {  /// Запрос PIDs
+            sendCommand("ATAR\r", response122 -> {  /// Запрос PIDs
+                addLog("\uD83D\uDD0D Текущие ошибки");
+                sendCommand("03\r", response17 -> {  /// Текущие ошибки
+                    addLog("\uD83D\uDD0D Сохраненные ошибки");
+                    sendCommand("07\r", response18 -> {  /// Сохраненные ошибки
+                        addLog("\uD83D\uDD0D Постоянные ошибки");
+                        sendCommand("0A\r", response19 -> {  /// Постоянные ошибки
+
+                        });
+                    });
+                });
+            });
+        });
+
+    }
+
+    private void readIden() {
+        ((ArrayAdapter) logListView.getAdapter()).clear();
+        sendCommand("0100\r", response12 -> {  /// Запрос PIDs
+            sendCommand("ATDP\r", response122 -> {  /// Запрос PIDs
+                sendCommand("0900\r", response13 -> {  /// Запрос PIDs
+                    sendCommand("0902\r", response14 -> {  /// Запрос PIDs
+                        sendCommand("0904\r", response15 -> {  /// Запрос PIDs
+                            sendCommand("0906\r", response16 -> {  /// Запрос PIDs
+                                sendCommand("1A90\r", response17 -> {  /// Запрос PIDs
+                                    sendCommand("1A97\r", response1A97 -> {  /// Запрос PIDs
+                                        sendCommand("1A71\r", response1A71 -> {  /// Запрос PIDs
+
+                                        });
+                                    });
+                                });
+                            });
+                        });
+                    });
+                });
+            });
+        });
+    }
+
+    /// Сервисные данные для М86
+    private void servRec() {
+        sendCommand("ATSP6\r", responseATSP -> { // Установить протокол CAN 11bit 500k
+            sendCommand("ATH1\r", responseATH -> { // ВКЛЮЧИТЬ заголовки (обязательн
+                sendCommand("ATCM7E8\r", responseCM -> {   // Set Mask - маска
+                    sendCommand("ATCF7E8\r", responseATCRA5E8 -> {  /// Set Filter - филь
+                        sendCommand("ATSH7E0\r", responseATSH7E0 -> {  /// Установка адреса получателя
+                            sendCommand("220001\r", responseAA031A -> {  /// Отправка запроса
+
+                            });
+                        });
+                    });
+                });
+            });
+        });
+    }
+
+    private void readKm() {
+        sendCommand("ATSP6\r", responseATSP -> { // Установить протокол CAN 11bit 500k
+            sendCommand("ATH1\r", responseATH -> { // ВКЛЮЧИТЬ заголовки (обязательн
+                sendCommand("ATCM5E8\r", responseCM -> {   // Set Mask - маска
+                    sendCommand("ATCF5E8\r", responseATCRA5E8 -> {  /// Set Filter - филь
+                        sendCommand("ATSH7E0\r", responseATSH7E0 -> {  /// Установка адреса получателя
+                            sendCommand("AA041A\r", responseAA031A -> {  /// Отправка запроса
+
+                            });
+                        });
+                    });
+                });
+            });
+        });
+    }
     /// //////////////////////////////////////////////////////////////////////////////////
-// Метод для поиска и отображения доступных Bluetooth устройств
+    /// Метод для поиска и отображения доступных Bluetooth устройств
+    @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
     private void discoverBluetoothDevices() {
         // Проверяем поддержку Bluetooth
         if (bluetoothAdapter == null) {
@@ -247,11 +294,15 @@ public class BluetoothActivity extends AppCompatActivity {
         showDeviceSelectionDialog();
     }
 
-    // Диалог для выбора Bluetooth устройства
+    /// Диалог для выбора Bluetooth устройства /////////////////////////////////////////////////
+    /// класс для создания диалоговых окон /////////////////////////////////////////////////////
+    @SuppressLint("MissingPermission")
+    @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
     private void showDeviceSelectionDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Выберите ELM327 адаптер");
-
+        // Устанавливаем цвет заголовка
+        builder.setCustomTitle(getColoredTitle("Select the ELM327 adapter"));
         // Создаем список имен устройств
         List<String> deviceNames = new ArrayList<>();
         for (BluetoothDevice device : availableDevices) {
@@ -260,7 +311,7 @@ public class BluetoothActivity extends AppCompatActivity {
 
         // Если устройств нет, показываем сообщение
         if (deviceNames.isEmpty()) {
-            deviceNames.add("Устройства не найдены");
+            deviceNames.add("No devices found");
         }
 
         builder.setItems(deviceNames.toArray(new String[0]), (dialog, which) -> {
@@ -270,16 +321,47 @@ public class BluetoothActivity extends AppCompatActivity {
             }
         });
 
-        builder.setNegativeButton("Обновить", (dialog, which) -> {
+        builder.setNegativeButton("Update", (dialog, which) -> {
             // Запускаем поиск новых устройств
             startDeviceDiscovery();
         });
 
-        builder.setNeutralButton("Отмена", null);
-        builder.show();
+        builder.setNeutralButton("Cancel", null);
+        //builder.show();
+
+        AlertDialog dialog = builder.create();
+
+        // Показываем диалог и затем настраиваем цвета кнопок
+        dialog.show();
+
+        // Устанавливаем цвета кнопок
+        Button negativeButton = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+        if (negativeButton != null) {
+            negativeButton.setTextColor(Color.BLUE);
+        }
+
+        Button neutralButton = dialog.getButton(AlertDialog.BUTTON_NEUTRAL);
+        if (neutralButton != null) {
+            neutralButton.setTextColor(Color.RED);
+        }
+
     }
 
+    // Метод для создания цветного заголовка
+    private TextView getColoredTitle(String title) {
+        TextView titleView = new TextView(this);
+        titleView.setText(title);
+        titleView.setTextColor(Color.BLACK);
+        titleView.setTextSize(20);
+        titleView.setTypeface(null, Typeface.BOLD);
+        titleView.setPadding(50, 50, 50, 50);
+        titleView.setGravity(Gravity.CENTER);
+        return titleView;
+    }
+
+    /// ////////////////////////////////////////////////////////////////////////////////////
     // Метод для начала поиска устройств
+    @RequiresPermission(Manifest.permission.BLUETOOTH_SCAN)
     private void startDeviceDiscovery() {
         // Регистрируем BroadcastReceiver для обнаружения устройств
         IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
@@ -297,6 +379,7 @@ public class BluetoothActivity extends AppCompatActivity {
     }
 
     private final BroadcastReceiver discoveryReceiver = new BroadcastReceiver() {
+        @SuppressLint("MissingPermission")
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
@@ -316,6 +399,7 @@ public class BluetoothActivity extends AppCompatActivity {
     };
 
     // Переделанный метод подключения к ELM327
+    @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
     private void connectToELM327(BluetoothDevice device) {
         if (device == null) {
             Toast.makeText(this, "Устройство не выбрано", Toast.LENGTH_SHORT).show();
@@ -328,7 +412,7 @@ public class BluetoothActivity extends AppCompatActivity {
         imageBluetooth.setColorFilter(Color.YELLOW);
         imageBluetooth.setImageResource(R.drawable.outline_bluetooth_connected_24);
         receivedDataPower.setText("Подключение...");
-        receivedDataPower.setTextColor(Color.YELLOW);
+        receivedDataPower.setTextColor(Color.GRAY);
 
         new Thread(() -> {
             try {
@@ -341,19 +425,20 @@ public class BluetoothActivity extends AppCompatActivity {
                     imageBluetooth.setColorFilter(Color.GREEN);
                     imageBluetooth.setImageResource(R.drawable.outline_bluetooth_connected_24);
                     receivedDataPower.setText("Connect");
-                    receivedDataPower.setTextColor(Color.GRAY);
-                    Toast.makeText(this, "Подключено к " + device.getName(), Toast.LENGTH_SHORT).show();
+                    receivedDataPower.setTextColor(Color.YELLOW);
+                    Toast.makeText(this, "Connected to " + device.getName(), Toast.LENGTH_SHORT).show();
                 });
 
-                Thread.sleep(1000);
+                Thread.sleep(700);
 
                 // Сброс адаптера и отключение эхо
                 sendCommand("ATZ\rATE0\r", response -> {
-                    Thread.sleep(1000);
+                    Thread.sleep(500);
                     sendCommand("ATE0\r", response2 -> {
                         sendCommand("ATE0\r", response3 -> {
                             sendCommand("STI\r", response4 -> {
                                 // addLog(" Адаптер: ");
+                                scanECU();
                             });
                         });
                     });
@@ -365,7 +450,11 @@ public class BluetoothActivity extends AppCompatActivity {
                     imageBluetooth.setImageResource(R.drawable.outline_bluetooth_disabled_24);
                     receivedDataPower.setText("Ошибка подключения");
                     receivedDataPower.setTextColor(Color.RED);
-                    btnScanECU.setCompoundDrawableTintList(ColorStateList.valueOf(Color.GRAY));
+                    btnIdenECU.setTextColor(Color.GRAY);
+                    btnDataECU.setTextColor(Color.GRAY);
+                    btnReadDTC.setTextColor(Color.GRAY);
+                    btnClearDTC.setTextColor(Color.GRAY);
+                    btnIdenECU.setCompoundDrawableTintList(ColorStateList.valueOf(Color.GRAY));
                     Toast.makeText(this, "Ошибка подключения: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
                 Log.e("Bluetooth", "Ошибка подключения", e);
@@ -373,7 +462,7 @@ public class BluetoothActivity extends AppCompatActivity {
         }).start();
     }
 
-/// //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// //////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Фильтрация ответа
     private String filterResponse(String response) {
         return response.replaceAll("\r", "")
@@ -480,7 +569,6 @@ public class BluetoothActivity extends AppCompatActivity {
         // Извлекаем HEX данные и конвертируем в ASCII
         String hexData = clean.replace("7EB", "");
 
-
         return convertHexToAscii(hexData);
         //return convertHexToAscii(clean);
     }
@@ -488,10 +576,10 @@ public class BluetoothActivity extends AppCompatActivity {
 
     private StringBuilder vinBuilder = new StringBuilder();
 
-    @SuppressLint("UseCompatTextViewDrawableApis")
+    @SuppressLint({"UseCompatTextViewDrawableApis", "SetTextI18n"})
     private void sendCommand(String command, ResponseCallback callback) {
         if (outputStream == null) {
-            showToast("Нет подключения!");
+            showToast("❌ No connection!");
             return;
         }
         // Создаем Handler для основного потока, если он еще не был создан
@@ -499,9 +587,8 @@ public class BluetoothActivity extends AppCompatActivity {
             handler = new Handler(Looper.getMainLooper());
         }
         new Thread(() -> {
-
             // Получаем drawable из ресурсов, если его нет
-            final Drawable[] leftDrawable = {btnScanECU.getCompoundDrawables()[0]};
+            final Drawable[] leftDrawable = {btnIdenECU.getCompoundDrawables()[0]};
             if (leftDrawable[0] == null) {
                 leftDrawable[0] = ContextCompat.getDrawable(this, R.drawable.outline_check_circle_unread_24);
             }
@@ -537,11 +624,11 @@ public class BluetoothActivity extends AppCompatActivity {
                         if (responseStr.contains(">")) {
                             receivedDataPower.setText("Connect");
                             receivedDataPower.setTextColor(Color.GREEN);
-                            Toast.makeText(this, "Adapter connect !!!", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(this, "✅ Adapter connect !!!", Toast.LENGTH_SHORT).show();
                         } else {
                             receivedDataPower.setText("No Connect");
                             receivedDataPower.setTextColor(Color.GRAY);
-                            addLog("No Connect ELM327" + responseStr);
+                            addLog("❌ No Connect ELM327" + responseStr);
                         }
                         //receivedDataTextView.setText(words[0]);
                     }
@@ -549,56 +636,106 @@ public class BluetoothActivity extends AppCompatActivity {
                         if (responseStr.startsWith("OK")) {
                             //addLog("Auto Reconnect OK.");
                         } else {
-                            addLog("Auto Reconnect ERROR.");
+                            addLog("❌ Auto Reconnect ERROR.");
                         }
                     }
 
                     /// ответ информация об адапторе
                     if (command.equals("ATI\r")) {
                         //addLog(">> " + command);
-                        addLog("Адаптер " + responseStr);
+                        addLog("✅ Адаптер " + responseStr);
                         receivedDataPower.setText(words[0]);
                     }
 
                     if (command.equals("AT@SN\r")) {
                         /// ответ серийном номере адаптора
                         if (words[0].equals("?") || words[0].equals("OK")) {
-                            addLog(" Подделка ");
+                            addLog("❌ Not the original adapter");
                             receivedDataPower.setTextColor(Color.RED); /// не оригинальный адаптер
                         } else {
-                            addLog(" Оригинал " + Arrays.toString(words));
+                            addLog("✅ The original adapter" + words[0]);
                             receivedDataPower.setTextColor(Color.GREEN); /// оригинальный адаптер
                         }
                     }
 
                     /// напряжение адапторе
                     if (command.equals("ATRV\r")) {
-                        addLog("Напряжение: " + responseStr);
+                        addLog("✅ Voltage: " + responseStr);
                     }
+
+                    /// напряжение ECU
+                    if (command.equals("01421\r")) {
+                        String[] wordss = responseStr.split(" ");
+                        if(Objects.equals(wordss[2], "41")){
+                            String hex = responseStr.split(" ")[4] + responseStr.split(" ")[5];
+                            addLog("✅ Voltage: " + String.format("%.2fV", Integer.parseInt(hex, 16) / 1000.0));
+                        } else {
+                            addLog("❌ Voltage - N/A 0x" + wordss[2]);
+                        }
+                    }
+
                     /// Clear DTC/////////////
                     if (command.startsWith("04\r")) {
                         if (responseStr.startsWith("7E8")) {
                             String[] wordss = responseStr.split(" ");
                             if (Objects.equals(wordss[2], "44")) {
-                                addLog("Erase DTC ... OK.");
+                                addLog("✅ Erase DTC ... OK.");
                             } else {
-                                addLog("Erase DTC ... ERROR.");
+                                addLog("❌ Erase DTC ... ERROR.");
                             }
                         } else {
-                            addLog("Erase DTC - N/A");
+                            addLog("❌ Erase DTC - N/A");
                         }
                     }
                     /// Read DTC/////////////
+                    if (command.startsWith("03\r")) {
+                        if (responseStr.startsWith("7E8")) {
+                            String[] wordss = responseStr.split(" ");
+                            if (wordss.length > 5) {
+                                if(Objects.equals(wordss[2], "7F")){
+                                    addLog("❌ DTC - Answer Error    " + wordss[2]);
+                                } else {
+                                    addLog("\uD83D\uDD39 P" + wordss[4] + wordss[5]);
+                                }
+
+                            } else {
+                                addLog("✅ DTC ... No Errors.");
+                            }
+                        } else {
+                            addLog("❌ DTC - N/A");
+                        }
+                    }
+
                     if (command.startsWith("07\r")) {
                         if (responseStr.startsWith("7E8")) {
                             String[] wordss = responseStr.split(" ");
                             if (wordss.length > 5) {
-                                addLog("P" + wordss[4] + wordss[5]);
+                                if(Objects.equals(wordss[2], "7F")){
+                                    addLog("❌ DTC - Answer Error    " + wordss[2]);
+                                } else {
+                                    addLog("\uD83D\uDD39 P" + wordss[4] + wordss[5]);
+                                }
                             } else {
-                                addLog("DTC ... No Errors.");
+                                addLog("✅ DTC ... No Errors.");
                             }
                         } else {
-                            addLog("DTC - N/A");
+                            addLog("❌ DTC - N/A");
+                        }
+                    }
+                    if (command.startsWith("0A\r")) {
+                        if (responseStr.startsWith("7E8")) {
+                            String[] wordss = responseStr.split(" ");
+                            if (wordss.length > 5) {
+                                if(Objects.equals(wordss[2], "7F")){
+                                    addLog("❌ DTC - Answer Error    " + wordss[2]);
+                                } else {
+                                    addLog("\uD83D\uDD39 P" + wordss[4] + wordss[5]);
+                                }
+                            } else {
+                                addLog("✅ DTC ... No Errors.");
+                            }
+                        } else {
+                            addLog("❌ DTC - N/A");
                         }
                     }
 /// /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -618,9 +755,9 @@ public class BluetoothActivity extends AppCompatActivity {
                             }
                             String fullNum = vinBuilder.toString();
                             vinBuilder.setLength(0);
-                            addLog("ECU id: " + wordss[4]);
+                            addLog("✅ ECU id: " + wordss[4]);
                         } else {
-                            addLog("ECU id - N/A");
+                            addLog("❌ ECU id - N/A");
                         }
                     }
 
@@ -642,9 +779,9 @@ public class BluetoothActivity extends AppCompatActivity {
                             String fullVin = vinBuilder.toString();
                             //receivedDataTextView.setText("VIN: " + fullVin);
                             vinBuilder.setLength(0);
-                            addLog("VIN: " + fullVin);
+                            addLog("✅ VIN: " + fullVin);
                         } else {
-                            addLog("VIN - N/A  - 0902");
+                            addLog("❌ VIN - N/A  - 0902");
                         }
                     }
 
@@ -664,9 +801,9 @@ public class BluetoothActivity extends AppCompatActivity {
                             }
                             String fullCalib = vinBuilder.toString();
                             vinBuilder.setLength(0);
-                            addLog("Calibration ID: " + fullCalib + "\n");
+                            addLog("✅ Calibration ID: " + fullCalib + "\n");
                         } else {
-                            addLog("Calibration ID - N/A");
+                            addLog("❌ Calibration ID - N/A");
                         }
                     }
 
@@ -687,9 +824,9 @@ public class BluetoothActivity extends AppCompatActivity {
                             }
                             String fullReadiness = vinBuilder.toString();
                             vinBuilder.setLength(0);
-                            addLog("Calibration Verify Num: " + fullReadiness + "\n");
+                            addLog("✅ Calibration Verify Num: " + fullReadiness + "\n");
                         } else {
-                            addLog("Calibration Verify Num - N/A");
+                            addLog("❌ Calibration Verify Num - N/A");
                         }
                     }
 
@@ -709,66 +846,140 @@ public class BluetoothActivity extends AppCompatActivity {
                             }
                             String fullReadiness = vinBuilder.toString();
                             vinBuilder.setLength(0);
-                            addLog("VIN: " + fullReadiness + "\n");
+                            addLog("✅ VIN: " + fullReadiness + "\n");
                         } else {
-                            addLog("VIN - N/A");
+                            addLog("❌ VIN - N/A");
+                        }
+                    }
+                    ////////////////////////////////////////////////////////////////////////////////////////////////////////
+                    /// ДЛЯ GM // Z18XER //////////////////
+                    if (command.startsWith("1A97\r")) {
+                        if (responseStr.startsWith("7E8")) {
+                            String[] wordss = responseStr.split(" ");
+                            StringBuilder sVim = new StringBuilder(Arrays.toString(wordss));
+                            for (int i = 5; i < wordss.length - 1; i++) {
+                                if (!wordss[i].startsWith("7E8") &&
+                                        !wordss[i].startsWith("21") &&
+                                        !wordss[i].startsWith("22") &&
+                                        !wordss[i].startsWith("55")) {
+                                    // Удаляем ВСЕ вхождения "7E8" из строки
+                                    String cleanedString = wordss[i].replace("7E8", "");
+                                    vinBuilder.append(extractVinFromResponse(cleanedString));
+                                }
+                            }
+                            String fullReadiness = vinBuilder.toString();
+                            vinBuilder.setLength(0);
+                            addLog("✅ ECU: " + fullReadiness + "\n");
+                        } else {
+                            addLog("❌ ECU - N/A");
+                        }
+                    }
+                    /// ДЛЯ GM // Z18XER //////////////////
+                    if (command.startsWith("1A71\r")) {
+                        if (responseStr.startsWith("7E8")) {
+                            String[] wordss = responseStr.split(" ");
+                            StringBuilder sVim = new StringBuilder(Arrays.toString(wordss));
+                            for (int i = 5; i < wordss.length - 1; i++) {
+                                if (!wordss[i].startsWith("7E8") &&
+                                        !wordss[i].startsWith("21") &&
+                                        !wordss[i].startsWith("22") &&
+                                        !wordss[i].startsWith("55")) {
+                                    // Удаляем ВСЕ вхождения "7E8" из строки
+                                    String cleanedString = wordss[i].replace("7E8", "");
+                                    vinBuilder.append(extractVinFromResponse(cleanedString));
+                                }
+                            }
+                            String fullReadiness = vinBuilder.toString();
+                            vinBuilder.setLength(0);
+                            addLog("✅ ECU: " + fullReadiness + "\n");
+                        } else {
+                            addLog("❌ ECU - N/A");
+                        }
+                    }
+                    /// ДЛЯ GM // odometer //////////////////
+                    if (command.startsWith("AA041A\r")) {
+                        if (responseStr.startsWith("5E8")) {
+                            String[] wordss = responseStr.split(" ");
+                            StringBuilder sVim = new StringBuilder(Arrays.toString(wordss));
+                            for (int i = 0; i < wordss.length - 1; i++) {
+                                if (!wordss[i].startsWith("5E8") &&
+                                        !wordss[i].startsWith("21") &&
+                                        !wordss[i].startsWith("22") &&
+                                        !wordss[i].startsWith("55")) {
+                                    // Удаляем ВСЕ вхождения "7E8" из строки
+                                    String cleanedString = wordss[i].replace("5E8", "");
+                                    vinBuilder.append(extractVinFromResponse(cleanedString));
+                                }
+                            }
+                            String fullReadiness = vinBuilder.toString();
+                            vinBuilder.setLength(0);
+                            // Предположим, wordss содержит HEX значения как строки
+                            int km = (Integer.parseInt(wordss[2], 16) << 24) |
+                                    (Integer.parseInt(wordss[3], 16) << 16) |
+                                    (Integer.parseInt(wordss[4], 16) << 8) |
+                                    Integer.parseInt(wordss[5], 16);
+                            addLog("✅ ODO: " + km  + " Km.\n");
+                        } else {
+                            addLog("❌ ODO - N/A");
                         }
                     }
 /// ///////////////////////////////////////////////////////////////////////////////////////////////////
                     String[] pid;
                     if (command.startsWith("0100\r")) {
-                        //if (responseStr.startsWith("SEARCHING...\r7E8")) {
-                        if (responseStr.startsWith("SEARCHING")) {
-
-                            //addLog("ECU Connect" + responseStr);
-                            btnScanECU.setCompoundDrawableTintList(ColorStateList.valueOf(Color.YELLOW));
+                        if (responseStr.startsWith("SEARCHING...\r7E8")) {
+                            btnIdenECU.setCompoundDrawableTintList(ColorStateList.valueOf(Color.YELLOW));
                             btnIdenECU.setTextColor(Color.WHITE);
+                            btnDataECU.setTextColor(Color.WHITE);
                             btnReadDTC.setTextColor(Color.WHITE);
                             btnClearDTC.setTextColor(Color.WHITE);
                             filterResponse(responseStr);
                             pid = responseStr.split(" ");
 
                             if (!Objects.equals(pid[2], "41")) {
-                                addLog("ECU No Connect 1");
+                                addLog("❌ ECU No Connect 1");
                                 btnIdenECU.setTextColor(Color.GRAY);
+                                btnDataECU.setTextColor(Color.GRAY);
                                 btnReadDTC.setTextColor(Color.GRAY);
                                 btnClearDTC.setTextColor(Color.GRAY);
-                                btnScanECU.setCompoundDrawableTintList(ColorStateList.valueOf(Color.GRAY));
+                                btnIdenECU.setCompoundDrawableTintList(ColorStateList.valueOf(Color.GRAY));
                                 return;
                             }
-                            addLog("ECU Connect OK.");
+                            addLog("✅ ECU Connect OK.");
                             // Вызов функции для анализа поддерживаемых PID
                             if (pid.length >= 8) {
                                 analyzeSupportedPIDs(pid[4], pid[5], pid[6], pid[7]);
                             } else {
-                                addLog(" Недостаточно данных для анализа PID");
+                                addLog("❌ Недостаточно данных для анализа PID");
                             }
                         } else if (responseStr.startsWith("7E8")) {
                             pid = responseStr.split(" ");
                             if (!Objects.equals(pid[2], "41")) {
-                                addLog("ECU No Connect");
+                                addLog("❌ ECU No Connect");
                                 btnIdenECU.setTextColor(Color.GRAY);
+                                btnDataECU.setTextColor(Color.GRAY);
                                 btnReadDTC.setTextColor(Color.GRAY);
                                 btnClearDTC.setTextColor(Color.GRAY);
-                                btnScanECU.setCompoundDrawableTintList(ColorStateList.valueOf(Color.GRAY));
+                                btnIdenECU.setCompoundDrawableTintList(ColorStateList.valueOf(Color.GRAY));
                                 return;
                             }
-                            addLog("ECU Connect OK.");
+                            addLog("✅ ECU Connect OK.");
                             String[] wordss = responseStr.split(" ");
-                            addLog("ECU address/CAN id: " + wordss[0] + "\n");
+                            addLog("✅ ECU address/CAN id: " + wordss[0] + "\n");
                             btnIdenECU.setTextColor(Color.WHITE);
+                            btnDataECU.setTextColor(Color.WHITE);
                             btnReadDTC.setTextColor(Color.WHITE);
                             btnClearDTC.setTextColor(Color.WHITE);
                             filterResponse(responseStr);
                             //receivedDataTextView.setText(responseStr);
-                            pid = responseStr.split(" ");
+                            //pid = responseStr.split(" ");
                             //receivedDataTextView.setText(pid[0]);
                         } else {
-                            addLog("ECU No Connect 2");
+                            addLog("❌ ECU No Connect 2");
                             btnIdenECU.setTextColor(Color.GRAY);
+                            btnDataECU.setTextColor(Color.GRAY);
                             btnReadDTC.setTextColor(Color.GRAY);
                             btnClearDTC.setTextColor(Color.GRAY);
-                            btnScanECU.setCompoundDrawableTintList(ColorStateList.valueOf(Color.GRAY));
+                            btnIdenECU.setCompoundDrawableTintList(ColorStateList.valueOf(Color.GRAY));
                             return;
                         }
 
@@ -790,9 +1001,9 @@ public class BluetoothActivity extends AppCompatActivity {
                             }
                             String fullVin = vinBuilder.toString();
                             vinBuilder.setLength(0);
-                            addLog("Protocol: " + fullVin);
+                            addLog("✅ Protocol: " + fullVin);
                         } else {
-                            addLog("Protocol - N/A  - 0902");
+                            addLog("❌ Protocol - N/A  - 0902");
                         }
                     }
 
@@ -808,7 +1019,7 @@ public class BluetoothActivity extends AppCompatActivity {
 
             } catch (IOException | InterruptedException e) {
                 // Обработка ошибок также через handler
-                handler.post(() -> showToast("Ошибка: " + e.getMessage()));
+                handler.post(() -> showToast("❌ Ошибка: " + e.getMessage()));
             }
         }).start();
     }
@@ -830,29 +1041,29 @@ public class BluetoothActivity extends AppCompatActivity {
 
             // Анализ поддерживаемых PID
             StringBuilder supportedPids = new StringBuilder();
-            supportedPids.append("Поддерживаемые PID:\n");
+            supportedPids.append("✅ Поддерживаемые PID:\n");
 
             // Байт 1: PIDs 01-08
-            supportedPids.append("Байт 1 (").append(byte1Hex).append(") - PIDs 01-08:\n");
+            supportedPids.append("✅ Байт 1 (").append(byte1Hex).append(") - PIDs 01-08:\n");
             analyzeBytePIDs(binaryString1, 1, supportedPids);
 
             // Байт 2: PIDs 09-16
-            supportedPids.append("\nБайт 2 (").append(byte2Hex).append(") - PIDs 09-16:\n");
+            supportedPids.append("\n✅ Байт 2 (").append(byte2Hex).append(") - PIDs 09-16:\n");
             analyzeBytePIDs(binaryString2, 9, supportedPids);
 
             // Байт 3: PIDs 17-1F (17-31)
-            supportedPids.append("\nБайт 3 (").append(byte3Hex).append(") - PIDs 17-1F:\n");
+            supportedPids.append("\n✅ Байт 3 (").append(byte3Hex).append(") - PIDs 17-1F:\n");
             analyzeBytePIDs(binaryString3, 17, supportedPids);
 
             // Байт 4: PIDs 20-27
-            supportedPids.append("\nБайт 4 (").append(byte4Hex).append(") - PIDs 20-27:\n");
+            supportedPids.append("\n✅ Байт 4 (").append(byte4Hex).append(") - PIDs 20-27:\n");
             analyzeBytePIDs(binaryString4, 20, supportedPids);
 
             // Выводим результат
             addLog(supportedPids.toString());
 
         } catch (NumberFormatException e) {
-            addLog(" Ошибка преобразования HEX данных: " + byte1Hex + " " + byte2Hex + " " + byte3Hex + " " + byte4Hex);
+            addLog("❌ Ошибка преобразования HEX данных: " + byte1Hex + " " + byte2Hex + " " + byte3Hex + " " + byte4Hex);
             e.printStackTrace();
         }
     }
@@ -866,7 +1077,7 @@ public class BluetoothActivity extends AppCompatActivity {
             int currentPid = startPid + i;
 
             if (bit == '1') {
-                result.append("  PID ").append(String.format("%02X", currentPid))
+                result.append("\uD83D\uDD39 PID ").append(String.format("%02X", currentPid))
                         .append(" (").append(currentPid).append(") - ")
                         .append(getPidDescription(currentPid)).append("\n");
             }

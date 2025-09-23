@@ -54,7 +54,21 @@ public class UniversalActivitySet extends AppCompatActivity {
         if(name != null){
             textViewModel.setText(name);
         }
+        /// ///RenaultAirbagMenuActivity///////////////////////////////////////////////////////////
+        TextView tv_ren_srs_set = findViewById(R.id.tv_ren_srs_set);
 
+        tv_ren_srs_set.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putString(KEY_SRS, tv_ren_srs_set.getText().toString());
+                editor.apply();
+
+                Intent intent = new Intent(UniversalActivitySet.this, RenaultAirbagMenuActivity.class);
+                startActivity(intent);
+                Toast.makeText(UniversalActivitySet.this, "Renault Airbag Menu", Toast.LENGTH_SHORT).show();
+            }
+        });
 
         /// ///textViewCarRadio///////////////////////////////////////////////////////////
         TextView textViewCarRadio = findViewById(R.id.textViewCarRadio);
@@ -68,7 +82,7 @@ public class UniversalActivitySet extends AppCompatActivity {
 
                 Intent intent = new Intent(UniversalActivitySet.this, UniversalCarRadio.class);
                 startActivity(intent);
-                Toast.makeText(UniversalActivitySet.this, "Model Radio success", Toast.LENGTH_SHORT).show();
+                Toast.makeText(UniversalActivitySet.this, "Renault CarRadio", Toast.LENGTH_SHORT).show();
             }
         });
 

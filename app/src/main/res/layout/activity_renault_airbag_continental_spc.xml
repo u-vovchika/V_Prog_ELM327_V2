@@ -22,6 +22,50 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="MissingConstraints">
 
+        <TextView
+            android:id="@+id/textViewModelEcu"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:layout_margin="1dp"
+            android:background="@color/dark_blue"
+            android:gravity="center"
+            android:text="Renault SRS Continental SPC"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+
+        <LinearLayout
+            android:id="@+id/containerV_prog"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/button_back_univ"
+                android:layout_width="wrap_content"
+                android:layout_height="39dp"
+                android:layout_margin="5dp"
+                android:background="@drawable/button_stroke_dark_red_press_white"
+                android:paddingStart="40dp"
+                android:paddingEnd="20dp"
+                android:text="Назад"
+                android:textAllCaps="false"
+                android:textColor="@color/dark_red"
+                android:textSize="15sp" />
+
+            <ImageView
+                android:id="@+id/imageViewLogo"
+                android:layout_width="141dp"
+                android:layout_height="50dp"
+                android:layout_marginStart="20dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/vprog" />
+
+        </LinearLayout>
+
 
         <LinearLayout
             android:id="@+id/container1"
@@ -40,25 +84,19 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/receivedDataPower"
-                android:layout_width="110dp"
-                android:layout_height="39dp"
-                android:padding="10dp"
+                android:id="@+id/tv_Connect"
+                android:layout_width="260dp"
+                android:layout_height="50dp"
                 android:background="@drawable/button_stroke_dark_red_press_white"
                 android:gravity="center"
+                android:layout_marginStart="20dp"
+                android:layout_margin="5dp"
+                android:padding="10dp"
                 android:text="Adapter"
                 android:textColor="@color/gray"
-                android:textSize="13sp"
+                android:textSize="15sp"
                 android:textStyle="bold" />
 
-            <ImageView
-                android:id="@+id/imageViewLogo"
-                android:layout_width="141dp"
-                android:layout_height="match_parent"
-                android:layout_marginStart="5dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/vprog" />
 
         </LinearLayout>
 
@@ -87,20 +125,35 @@
                     android:gravity="center"
                     android:paddingStart="10dp"
                     android:text="ECU"
-                    android:textColor="@color/white" />
+                    android:textColor="@color/gray" />
+
                 <Button
-                    android:id="@+id/btnDataECU"
-                    android:layout_width="145dp"
+                    android:id="@+id/btn_lock"
+                    android:layout_width="65dp"
                     android:layout_height="50dp"
                     android:layout_margin="5dp"
                     android:background="@drawable/button_stroke_dark_red_press_white"
+                    android:paddingStart="20dp"
+                    android:drawableLeft="@drawable/baseline_lock_outline_24"
+                    android:drawableTint="@color/dark_red"
+                    android:textColor="@color/gray" />
+
+                <Button
+                    android:id="@+id/btn_unlock"
+                    android:layout_width="65dp"
+                    android:layout_height="50dp"
+                    android:layout_margin="5dp"
+                    android:background="@drawable/button_stroke_dark_red_press_white"
+                    android:drawableLeft="@drawable/baseline_lock_open_24"
+                    android:drawableTint="@color/green"
                     android:gravity="center"
-                    android:paddingStart="10dp"
-                    android:text="Data"
-                    android:textColor="@color/gray"
-                    />
+                    android:paddingStart="20dp"
+
+                    android:textColor="@color/gray" />
 
             </LinearLayout>
+
+
         </LinearLayout>
 
 
@@ -152,7 +205,48 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:orientation="horizontal"/>
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btn_erase_crash"
+                    android:layout_width="300dp"
+                    android:layout_height="50dp"
+                    android:layout_margin="5dp"
+                    android:background="@drawable/button_stroke_dark_red_press_white"
+                    android:text="Erase CRASH"
+                    android:textColor="@color/gray" />
+
+
+
+            </LinearLayout>
+        </LinearLayout>
+
+
+
+        <LinearLayout
+            android:id="@+id/container5"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:id="@+id/container6"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:id="@+id/line4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal" />
         </LinearLayout>
 
         <ListView
@@ -161,14 +255,11 @@
             android:layout_height="match_parent"
             android:layout_margin="10dp"
             android:layout_marginTop="10dp"
-            android:textColor="@color/white"
             android:background="@color/dark_blue"
+            android:textColor="@color/white"
             app:layout_constraintTop_toBottomOf="@+id/containerECU" />
 
     </LinearLayout>
-
-
-
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
