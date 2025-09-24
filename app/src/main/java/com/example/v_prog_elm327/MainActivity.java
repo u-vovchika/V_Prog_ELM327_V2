@@ -1,6 +1,7 @@
 package com.example.v_prog_elm327;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.animation.Animation;
@@ -15,12 +16,13 @@ import androidx.core.view.WindowInsetsCompat;
 
 public class MainActivity extends AppCompatActivity {
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-       ///  проявление картинки //////////////
+        ///  проявление картинки //////////////
         ImageView main_background = findViewById(R.id.main_background);
         Animation out = AnimationUtils.loadAnimation(MainActivity.this, R.anim.anim_alpha);
         main_background.startAnimation(out);

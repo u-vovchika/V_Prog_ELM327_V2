@@ -46,7 +46,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
-public class RenaultAirbagContinentalSpcActivity extends AppCompatActivity {
+public class RenaultAirbagContinentalRh850Activity extends AppCompatActivity {
 
     private static final int REQUEST_ENABLE_BT = 1;
     private static final int REQUEST_PERMISSIONS = 2;
@@ -86,10 +86,11 @@ public class RenaultAirbagContinentalSpcActivity extends AppCompatActivity {
 
     @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_renault_airbag_continental_spc);
+        setContentView(R.layout.activity_renault_airbag_continental_rh850);
 
         logListView = findViewById(R.id.logListView);
         logAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, logMessages);
@@ -111,7 +112,11 @@ public class RenaultAirbagContinentalSpcActivity extends AppCompatActivity {
         buttonBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(RenaultAirbagContinentalSpcActivity.this, RenaultAirbagMenuActivity.class);
+//                SharedPreferences.Editor editor = sharedPreferences.edit();
+//                editor.clear(); // стираем данные textViewModel
+//                editor.apply(); // записываем данные после очистки textViewModel
+//                finish();// завершения процесса
+                Intent intent = new Intent(RenaultAirbagContinentalRh850Activity.this, RenaultAirbagMenuActivity.class);
                 startActivity(intent);
             }
         });
@@ -122,7 +127,7 @@ public class RenaultAirbagContinentalSpcActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // setContentView(R.layout.lada_airbag_takata_spc_help); // Ваш XML-файл
-                Intent intent = new Intent(RenaultAirbagContinentalSpcActivity.this, RenaultAirbagContinentalSpcHelp.class);
+                Intent intent = new Intent(RenaultAirbagContinentalRh850Activity.this, RenaultAirbagContinentalSpcHelp.class);
                 startActivity(intent);
             }
         });
@@ -165,7 +170,7 @@ public class RenaultAirbagContinentalSpcActivity extends AppCompatActivity {
                 clearDTC();
             }
         });
-        /// кнопка LOCK
+        /// /кнопка LOCK
         btn_lock.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -173,7 +178,7 @@ public class RenaultAirbagContinentalSpcActivity extends AppCompatActivity {
                 EcuLock();
             }
         });
-        /// кнопка UNLOCK
+        /// /кнопка UNLOCK
         btn_unlock.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -181,7 +186,7 @@ public class RenaultAirbagContinentalSpcActivity extends AppCompatActivity {
                 EcuUnLock();
             }
         });
-        /// /кнопка поиск чистка КРАШ
+        /// /кнопка поиск ECU
         btn_erase_crash.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -193,41 +198,51 @@ public class RenaultAirbagContinentalSpcActivity extends AppCompatActivity {
     }
 
 
-    /// функция разблокировки блока
     private void EcuUnLock() {
-        sendCommand("10C0", resp10C0 -> {  /// начальная идентификация
+        sendCommand("1003", resp10C0 -> {  /// начальная идентификация
             Thread.sleep(700);
-            sendCommand("3B1000", response122 -> {  ///
+            sendCommand("2EA01000", response122 -> {  ///
                 Thread.sleep(700);
 
             });
         });
     }
-    /// функция блокировки блока
+
     private void EcuLock() {
-        sendCommand("10C0", resp10C0 -> {  /// начальная идентификация
+
+        sendCommand("1003", resp10C0 -> {  /// начальная идентификация
             Thread.sleep(700);
-            sendCommand("3B10FF", response122 -> {  ///
+            sendCommand("2EA010FF", response122 -> {  ///
                 Thread.sleep(700);
 
             });
         });
     }
-    /// функция чистки КРАШ
+
     private void eraseCRASH() {
-        sendCommand("10C0", resp10C0 -> {  /// начальная идентификация
-            Thread.sleep(700);
-            sendCommand("2130", response122 -> {  ///
+
+
+        sendCommand("1003", resp10C0 -> {  /// начальная идентификация
+            Thread.sleep(500);
+            sendCommand("22A002", response122 -> {  ///
                 Thread.sleep(700);
-                sendCommand("3BA013041976", resp3BA013041976 -> {  /// сТИРАЕМ краш
+                sendCommand("2EA02A12071969", resp2EA02A12071969 -> {  /// сТИРАЕМ краш
                     Thread.sleep(700);
-                    clearDTC(); /// И ЧИСТИМ ОШИБКИ
+                    sendCommand("14FFFFFF", resp14FFFFFF -> {  /// Clear DTC
+                        //addLog("\uD83D\uDD0D 1_ " + resp14FFFFFF);
+                        Thread.sleep(200);
+                        sendCommand("14FFFFFF", resp14FFFF -> {  /// Clear DTC
+                            //addLog("\uD83D\uDD0D 2_ " + resp14FFFF);
+                            Thread.sleep(200);
+
+                        });
+                    });
                 });
             });
         });
     }
 
-    /// функция настройки адаптера
+
     private void scanECU() {
         //((ArrayAdapter) logListView.getAdapter()).clear();
         addLog("\uD83D\uDEE0 Config the Adapter ...");
@@ -269,6 +284,7 @@ public class RenaultAirbagContinentalSpcActivity extends AppCompatActivity {
                                                     readIden();
                                                 });
                                             });
+
                                         });
                                     });
                                 });
@@ -279,31 +295,43 @@ public class RenaultAirbagContinentalSpcActivity extends AppCompatActivity {
             });
         });
     }
-    /// функция чистки ошибок
+
     private void clearDTC() {
-        sendCommand("1081", response0100 -> {  /// начальная идентификация
-            Thread.sleep(700);
-            sendCommand("ATAR", response122 -> {  /// Запрос PIDs
-                sendCommand("14FFFFFF", response17 -> {  /// Clear DTC
+        sendCommand("1003", resp1003 -> {  /// начальная идентификация
+            //sendCommand("3E00", resp3E -> {  /// начальная идентификация
+            Thread.sleep(300);
+            sendCommand("14FFFFFF", resp14FFFFFF -> {  /// Clear DTC
+                //addLog("\uD83D\uDD0D 1_ " + resp14FFFFFF);
+                Thread.sleep(200);
+                sendCommand("14FFFFFF", resp14FFFF -> {  /// Clear DTC
+                    //addLog("\uD83D\uDD0D 2_ " + resp14FFFF);
+                    Thread.sleep(200);
 
                 });
             });
+
         });
+
+
     }
-    /// функция чтения ошибок
+
     private void readDtc() {
-        sendCommand("10C0", response1003 -> {  /// начальная идентификация
+
+
+        sendCommand("1003", response1003 -> {  /// начальная идентификация
             //sendCommand("3E01", response1003 -> {  /// начальная идентификация
             //addLog("\uD83D\uDD0D Connect ECU ..." + response1003);
-            Thread.sleep(700);
+            Thread.sleep(300);
             addLog("\uD83D\uDD0D Текущие ошибки");
-            sendCommand("19023B", resp19023B -> {  /// Текущие ошибки
-                addLog("\uD83D\uDD0D DTC ..." + resp19023B);
-                Thread.sleep(700);
+            sendCommand("19023B", resp190201 -> {  /// Текущие ошибки
+                //addLog("\uD83D\uDD0D DTC ..." + resp190201);
+                Thread.sleep(500);
             });
         });
+
+
     }
-    /// функция команды "Дай еще данные"
+
     private void continuation() {
         sendCommand("30000000", response30 -> {  ///
             addLog(" " + response30);
@@ -311,23 +339,34 @@ public class RenaultAirbagContinentalSpcActivity extends AppCompatActivity {
 
         });
     }
-    /// функция чтения идентов блока номер и вин
+
     private void readIden() {
         ((ArrayAdapter) logListView.getAdapter()).clear();
         sendCommand("ATRV", respATRV -> {  ///
-            sendCommand("1081", response1003 -> {  ///
+            sendCommand("1003", response1003 -> {  ///
 //            //addLog("1003:  " + response1003);
-                Thread.sleep(500);
-                sendCommand("2180", response22E310 -> {  ///
-                    //addLog("22E310:  " + response22E310);
+                Thread.sleep(300);
+                sendCommand("22F187", resp22F187 -> {  ///
+                    //addLog("22F187:  " + resp22F187);
                     Thread.sleep(700);
-                    sendCommand("2181", response22E300 -> {  ///
+                    sendCommand("22F190", resp22F190 -> {  ///
+                        //addLog("22F190:  " + resp22F190);
+                        Thread.sleep(700);
 
                     });
                 });
             });
+
+        });
+
+    }
+
+    private void condition() {
+        sendCommand("22D100", response22D100 -> {  ///
+            // addLog("Condition:  " + response22D100);
         });
     }
+
 
     /// //////////////////////////////////////////////////////////////////////////////////
     /// Метод для поиска и отображения доступных Bluetooth устройств
@@ -338,12 +377,14 @@ public class RenaultAirbagContinentalSpcActivity extends AppCompatActivity {
             Toast.makeText(this, "Bluetooth не поддерживается", Toast.LENGTH_SHORT).show();
             return;
         }
+
         // Проверяем, включен ли Bluetooth
         if (!bluetoothAdapter.isEnabled()) {
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
             return;
         }
+
         // Очищаем предыдущий список устройств
         availableDevices.clear();
 
@@ -352,6 +393,7 @@ public class RenaultAirbagContinentalSpcActivity extends AppCompatActivity {
         if (pairedDevices.size() > 0) {
             availableDevices.addAll(pairedDevices);
         }
+
         // Показываем диалог выбора устройства
         showDeviceSelectionDialog();
     }
@@ -370,6 +412,7 @@ public class RenaultAirbagContinentalSpcActivity extends AppCompatActivity {
         for (BluetoothDevice device : availableDevices) {
             deviceNames.add(device.getName() + "\n" + device.getAddress());
         }
+
         // Если устройств нет, показываем сообщение
         if (deviceNames.isEmpty()) {
             deviceNames.add("No devices found");
@@ -459,7 +502,7 @@ public class RenaultAirbagContinentalSpcActivity extends AppCompatActivity {
         }
     };
 
-    // метод подключения к ELM327
+    // Переделанный метод подключения к ELM327
     @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
     private void connectToELM327(BluetoothDevice device) {
         if (device == null) {
@@ -490,7 +533,9 @@ public class RenaultAirbagContinentalSpcActivity extends AppCompatActivity {
                     Toast.makeText(this, "\uD83D\uDEE0 Connected to " + device.getName(), Toast.LENGTH_SHORT).show();
                 });
 
-                Thread.sleep(500);
+                Thread.sleep(700);
+
+
                 // Сброс адаптера и отключение эхо
                 sendCommand("ATZ\rATE0\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r", respATZATE0 -> {
                     Thread.sleep(1000);
@@ -672,26 +717,58 @@ public class RenaultAirbagContinentalSpcActivity extends AppCompatActivity {
                         }
                     }
 
-                    /// Clear DTC/////////////
+//                    /// Clear DTC/////////////
+//                    if (command.startsWith("14FFFFFF")) {
+//                        if (responseStr.startsWith("772")) {
+//                            String[] wordss = responseStr.split(" ");
+//                            if (Objects.equals(wordss[2], "54")) {
+//                                addLog("✅ Erase DTC ... OK.");
+//                            } else {
+//                                addLog("❌ Erase DTC ... ERROR.  \n⚠\uFE0F " + wordss[1] + wordss[2] + wordss[3] + wordss[4]);
+//                            }
+//                        } else {
+//                            addLog("❌ Erase DTC - N/A");
+//                        }
+//                    }
+                    /// Clear DTC /////////////
                     if (command.startsWith("14FFFFFF")) {
                         if (responseStr.startsWith("772")) {
                             String[] wordss = responseStr.split(" ");
-                            if (Objects.equals(wordss[2], "54")) {
-                                addLog("✅ Erase DTC ... OK.");
-                            } else {
-                                addLog("❌ Erase DTC ... ERROR.  \n⚠\uFE0F " + wordss[1] + wordss[2] + wordss[3] + wordss[4]);
+                            if (wordss.length > 3) {
+                                if (Objects.equals(wordss[2], "7F")) {
+                                    if (Objects.equals(wordss[4], "78")) {
+//                                        if (Objects.equals(wordss[8], "54")) {
+//                                            addLog("✅ Erase DTC ... OK.");
+//                                        }
+                                    }
+                                }
+                                if (Objects.equals(wordss[2], "54")) {
+                                    addLog("✅ Erase DTC ... OK.");
+                                }
                             }
                         } else {
                             addLog("❌ Erase DTC - N/A");
                         }
                     }
+
+
                     /// Read DTC/////////////
                     if (command.startsWith("19023B")) {
                         if (responseStr.startsWith("772")) {
                             String[] wordss = responseStr.split(" ");
-                            if (wordss.length > 5) {
+                            if (wordss.length > 3) {
                                 if (Objects.equals(wordss[2], "7F")) {
-                                    addLog("❌ DTC - Answer Error    " + wordss[2]);
+                                    if (Objects.equals(wordss[4], "78")) {
+                                        if (Objects.equals(wordss[8], "59")) {
+                                            addLog("\uD83D\uDD39 " + wordss[11] + wordss[12]);
+                                        }
+                                        if (Objects.equals(wordss[8], "10")) {
+                                            addLog("\uD83D\uDD39 " + wordss[13] + wordss[14] + "-" + wordss[8]);
+                                            //continuation();
+                                        }
+                                    } else {
+                                        addLog("❌ DTC - Answer Error    " + wordss[2]);
+                                    }
                                 } else {
                                     if (Objects.equals(wordss[1], "59")) {
                                         addLog("\uD83D\uDD39 " + wordss[4] + wordss[5]);
@@ -700,9 +777,7 @@ public class RenaultAirbagContinentalSpcActivity extends AppCompatActivity {
                                         addLog("\uD83D\uDD39 " + wordss[6] + wordss[7] + "-" + wordss[8]);
                                         //continuation();
                                     }
-
                                 }
-
                             } else {
                                 addLog("✅ DTC ... No Errors.");
                             }
@@ -711,15 +786,15 @@ public class RenaultAirbagContinentalSpcActivity extends AppCompatActivity {
                         }
                     }
                     /// ERASE CRASH /////////////
-                    if (command.startsWith("3BA013041976")) {
+                    if (command.startsWith("2EA02A12071969")) {
                         if (responseStr.startsWith("772")) {
                             String[] wordss = responseStr.split(" ");
                             //if (wordss.length > 5) {
                             if (Objects.equals(wordss[2], "7F")) {
-                                addLog("❌ Erase CRASH ... Error.    " + wordss[2]);
+                                addLog("❌ Erase CRASH Error.    " + wordss[2]);
                             }
-                            if (Objects.equals(wordss[2], "7B")) {
-                                addLog("✅ Erase CRASH ... OK. ");
+                            if (Objects.equals(wordss[2], "6E")) {
+                                addLog("✅ Erase CRASH OK. ");
                             }
                         } else {
                             addLog("❌ Erase CRASH - N/A");
@@ -728,42 +803,71 @@ public class RenaultAirbagContinentalSpcActivity extends AppCompatActivity {
 
 
                     /// LOCK /////////////
-                    if (command.startsWith("3B10FF")) {
+                    if (command.startsWith("2EA010FF")) {
                         if (responseStr.startsWith("772")) {
                             String[] wordss = responseStr.split(" ");
                             //if (wordss.length > 5) {
                             if (Objects.equals(wordss[2], "7F")) {
-                                addLog("❌ ECU Lock ... Error.    " + wordss[2]);
+                                addLog("❌ ECU LOCK Error.    " + wordss[2]);
                             }
-                            if (Objects.equals(wordss[2], "7B")) {
-                                addLog("✅ ECU Lock ... OK. ");
+                            if (Objects.equals(wordss[2], "6E")) {
+                                addLog("✅ ECU LOCK OK. ");
                             }
                         } else {
-                            addLog("❌ ECU Lock - N/A");
+                            addLog("❌ ECU LOCK - N/A");
                         }
                     }
-                    /// LOCK /////////////
-                    if (command.startsWith("3B1000")) {
+                    /// UNLOCK /////////////
+                    if (command.startsWith("2EA01000")) {
                         if (responseStr.startsWith("772")) {
                             String[] wordss = responseStr.split(" ");
                             //if (wordss.length > 5) {
                             if (Objects.equals(wordss[2], "7F")) {
-                                addLog("❌ ECU UnLock ... Error.    " + wordss[2]);
+                                addLog("❌ ECU UNLOCK Error.    " + wordss[2]);
                             }
-                            if (Objects.equals(wordss[2], "7B")) {
-                                addLog("✅ ECU UnLock ... OK. ");
+                            if (Objects.equals(wordss[2], "6E")) {
+                                addLog("✅ ECU UNLOCK OK. ");
                             }
                         } else {
-                            addLog("❌ ECU UnLock - N/A");
+                            addLog("❌ ECU UNLOCK - N/A");
                         }
                     }
 /// /////////////////////////////////////////////////////////////////////////////////////////////////
-/// идентификация ///////////////////////////////////////////////////////////////////////////////////////
-                    if (command.startsWith("2180")) {
+                    if (command.startsWith("22D100")) {
+                        if (responseStr.startsWith("772")) {
+                            String[] wordss = responseStr.split(" ");
+//                            StringBuilder sVim = new StringBuilder(Arrays.toString(wordss));
+//                            for (int i = 6; i < wordss.length; i++) {
+//                                if (!wordss[i].startsWith("772") &&
+//                                        !wordss[i].startsWith("21") &&
+//                                        !wordss[i].startsWith("22") &&
+//                                        !wordss[i].startsWith("55")) {
+//                                    // Удаляем ВСЕ вхождения "7E8" из строки
+//                                    String cleanedString = wordss[i].replace("772", "");
+//                                    vinBuilder.append(extractVinFromResponse(cleanedString));
+//                                }
+//                            }
+//                            String fullNum = vinBuilder.toString();
+//                            vinBuilder.setLength(0);
+                            if (Objects.equals(wordss[5], "A5")) {
+                                addLog("✅ Condition:  Normal");
+                            } else if (Objects.equals(wordss[5], "5A")) {
+                                addLog("\uD83D\uDD01 Condition:  Factory");
+                            } else {
+                                addLog("❌ Condition - N/A ");
+                            }
+
+                        } else {
+                            addLog("❌ ECU id - N/A");
+                        }
+                    }
+
+                    /// идентификация ///////////////////////////////////////////////////////////////////////////////////////
+                    if (command.startsWith("22F187")) {
                         if (responseStr.startsWith("772")) {
                             String[] wordss = responseStr.split(" ");
                             StringBuilder sVim = new StringBuilder(Arrays.toString(wordss));
-                            for (int i = 5; i < wordss.length; i++) {
+                            for (int i = 6; i < wordss.length; i++) {
                                 if (!wordss[i].startsWith("772") &&
                                         !wordss[i].startsWith("21") &&
                                         !wordss[i].startsWith("22") &&
@@ -775,17 +879,17 @@ public class RenaultAirbagContinentalSpcActivity extends AppCompatActivity {
                             }
                             String fullVin = vinBuilder.toString();
                             vinBuilder.setLength(0);
-                            addLog("✅ VER HW:  " + fullVin);
+                            addLog("✅ Part Num:  " + fullVin);
                         } else {
-                            addLog("❌ VER HW - N/A");
+                            addLog("❌ Part Num - N/A");
                         }
                     }
 
-                    if (command.startsWith("2181")) {
+                    if (command.startsWith("22F190")) {
                         if (responseStr.startsWith("772")) {
                             String[] wordss = responseStr.split(" ");
                             StringBuilder sVim = new StringBuilder(Arrays.toString(wordss));
-                            for (int i = 5; i < wordss.length; i++) {
+                            for (int i = 6; i < wordss.length; i++) {
                                 if (!wordss[i].startsWith("772") &&
                                         !wordss[i].startsWith("21") &&
                                         !wordss[i].startsWith("22") &&
@@ -804,11 +908,11 @@ public class RenaultAirbagContinentalSpcActivity extends AppCompatActivity {
                     }
 /// ///////////////////////////////////////////////////////////////////////////////////////////////////
                     String[] pid;
-                    if (command.startsWith("1081") || command.startsWith("10C0")) {
+                    if (command.startsWith("1003")) {
                         if (responseStr.startsWith("772")) {
                             pid = responseStr.split(" ");
                             if (!Objects.equals(pid[2], "50")) {
-                                addLog("❌ ECU Connect ... ERROR.");
+                                addLog("❌ ECU No Connect");
                                 btnIdenECU.setTextColor(Color.GRAY);
                                 btn_lock.setTextColor(Color.GRAY);
                                 btn_unlock.setTextColor(Color.GRAY);
@@ -818,7 +922,7 @@ public class RenaultAirbagContinentalSpcActivity extends AppCompatActivity {
                                 btnIdenECU.setCompoundDrawableTintList(ColorStateList.valueOf(Color.GRAY));
                                 return;
                             } else if (Objects.equals(pid[2], "50")) {
-                                addLog("✅ ECU Connect ... OK.");
+                                addLog("✅ ECU Connect OK.");
                                 String[] wordss = responseStr.split(" ");
                                 //addLog("✅ ECU address/CAN id: " + wordss[0] + "\n");
                                 btnIdenECU.setTextColor(Color.WHITE);
@@ -829,7 +933,7 @@ public class RenaultAirbagContinentalSpcActivity extends AppCompatActivity {
                                 btn_erase_crash.setTextColor(Color.WHITE);
                             }
                         } else {
-                            addLog("❌ ECU Connect ... ERROR. 2");
+                            addLog("❌ ECU No Connect 2");
                             btnIdenECU.setTextColor(Color.GRAY);
                             btn_lock.setTextColor(Color.GRAY);
                             btn_unlock.setTextColor(Color.GRAY);

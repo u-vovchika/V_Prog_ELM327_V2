@@ -110,7 +110,7 @@
                         android:background="@drawable/button_stroke_dark_red_press_white"
                         android:gravity="center"
                         android:text="RH850 Continental"
-                        android:textColor="@color/gray"
+                        android:textColor="@color/white"
                         android:textSize="15sp"
                         android:textStyle="bold" />
 

@@ -51,5 +51,15 @@ public class RenaultAirbagMenuActivity extends AppCompatActivity {
             }
         });
 
+        /// выбираем RH850 Continental
+        tv_ren_srs_rh850.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(RenaultAirbagMenuActivity.this, RenaultAirbagContinentalRh850Activity.class);
+                startActivity(intent);
+            }
+        });
+
+
     }
 }
