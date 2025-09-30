@@ -53,9 +53,9 @@ public class UniversalCarRadio extends AppCompatActivity {
         textRenaultXC.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putString(KEY_RADIO, textRenaultXC.getText().toString());
-                editor.apply();
+//                SharedPreferences.Editor editor = sharedPreferences.edit();
+//                editor.putString(KEY_RADIO, textRenaultXC.getText().toString());
+//                editor.apply();
                 Intent intent = new Intent(UniversalCarRadio.this, RenaultCarradioFinal.class);
                 startActivity(intent);
             }

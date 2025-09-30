@@ -60,9 +60,9 @@ public class UniversalActivitySet extends AppCompatActivity {
         tv_ren_srs_set.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putString(KEY_SRS, tv_ren_srs_set.getText().toString());
-                editor.apply();
+//                SharedPreferences.Editor editor = sharedPreferences.edit();
+//                editor.putString(KEY_SRS, tv_ren_srs_set.getText().toString());
+//                editor.apply();
 
                 Intent intent = new Intent(UniversalActivitySet.this, RenaultAirbagMenuActivity.class);
                 startActivity(intent);
@@ -76,9 +76,9 @@ public class UniversalActivitySet extends AppCompatActivity {
         textViewCarRadio.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putString(KEY_RADIO, textViewCarRadio.getText().toString());
-                editor.apply();
+//                SharedPreferences.Editor editor = sharedPreferences.edit();
+//                editor.putString(KEY_RADIO, textViewCarRadio.getText().toString());
+//                editor.apply();
 
                 Intent intent = new Intent(UniversalActivitySet.this, UniversalCarRadio.class);
                 startActivity(intent);

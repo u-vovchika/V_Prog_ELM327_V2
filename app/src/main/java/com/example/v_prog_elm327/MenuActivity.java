@@ -91,9 +91,9 @@ public class MenuActivity extends AppCompatActivity {
         textRenault.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putString(KEY_MODEL, textRenault.getText().toString());
-                editor.apply();
+//                SharedPreferences.Editor editor = sharedPreferences.edit();
+//                editor.putString(KEY_MODEL, textRenault.getText().toString());
+//                editor.apply();
 
                 Intent intent = new Intent(MenuActivity.this, UniversalActivitySet.class);
                 startActivity(intent);
