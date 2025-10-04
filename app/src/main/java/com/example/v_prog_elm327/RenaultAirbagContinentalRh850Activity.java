@@ -50,6 +50,8 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
+import kotlin.text.HexFormat;
+
 public class RenaultAirbagContinentalRh850Activity extends AppCompatActivity {
 
     private static final int REQUEST_ENABLE_BT = 1;
@@ -630,6 +632,7 @@ public class RenaultAirbagContinentalRh850Activity extends AppCompatActivity {
     /// /////////////////////////////////////////////////////////////////////////////
     String[] data = new String[50];
 
+
     @SuppressLint({"UseCompatTextViewDrawableApis", "SetTextI18n"})
     private void sendCommand(String command, ResponseCallback callback) {
         if (outputStream == null) {
@@ -832,47 +835,55 @@ public class RenaultAirbagContinentalRh850Activity extends AppCompatActivity {
                             // addLog("❌ 30 - N/A");
                         }
                     }
+
+
                     /// continuation2(); ///////////////////////////////////////////////////////
                     if (command.equals("3000")) {
                         if (responseStr.startsWith("772")) {
                             String[] wordss = responseStr.split(" ");
                             System.arraycopy(wordss, 0, data, 3, wordss.length);
-                            //  processDtcErrors(data); // Обработка DTC ошибок
-                            String cleanedString = null;
-                            for (int i = 0; i < data.length; i++) {  // 21
-                                if (Objects.equals(data[i], "20") || Objects.equals(data[i], "FF"))
-                                    break;
-                                if (data[i] == null) {
-                                    addLog("❌ 3000 - N/A");
-                                    break;
-                                } else if (!data[i].startsWith("772") &&
-                                        !data[i].startsWith("21") &&
-                                        !data[i].startsWith("22") &&
-                                        !data[i].startsWith("23") &&
-                                        !data[i].startsWith("24") &&
-                                        !data[i].startsWith("25") &&
-                                        !data[i].startsWith("26") &&
-                                        !data[i].startsWith("FF")) {
-                                    // Удаляем 772 вхождения "7E8" из строки
-                                    cleanedString = data[i].replace("772", "");
-                                    //vinBuilder.append(extractVinFromResponse(cleanedString));
-                                    vinBuilder.append(cleanedString);
+                            // Проходим по всем данным и проверяем каждую возможную пару
+                            for (int i = 0; i < data.length; i++) {
+                                if (data[i] == null) break;
+                                if ("20".equals(data[i]) || "FF".equals(data[i])) break;
+
+                                // Пропускаем "772" и следующие за ним 21,22,23,24,25
+                                if ("772".equals(data[i])) {
+                                    // Проверяем следующий элемент, если он существует
+                                    if (i + 1 < data.length && data[i + 1] != null) {
+                                        String nextValue = data[i + 1];
+                                        if ("21".equals(nextValue) || "22".equals(nextValue) ||
+                                                "23".equals(nextValue) || "24".equals(nextValue) ||
+                                                "25".equals(nextValue)) {
+                                            i++; // Пропускаем и 772 и следующий элемент
+                                            continue;
+                                        }
+                                    }
+                                    // Если после 772 нет 21-25, то пропускаем только 772
+                                    continue;
                                 }
+                                // Также пропускаем отдельные значения 21,22,23,24,25
+                                if ("21".equals(data[i]) || "22".equals(data[i]) ||
+                                        "23".equals(data[i]) || "24".equals(data[i]) ||
+                                        "25".equals(data[i])) {
+                                    continue;
+                                }
+
+                                data[i] = data[i].replace("772", "");
+                                // Добавляем все остальные значения
+                                vinBuilder.append(data[i]);
+
                             }
-                            //processDtcErrors(data); // Обработка DTC ошибок
+
                             String fullCalib = vinBuilder.toString();
                             vinBuilder.setLength(0);
-                            //addLog("✅ 30:  " + Arrays.toString(data));
-                            //addLog("\uD83D\uDD39  " + fullCalib);
-                            //processDtcErrors(data); // Обработка DTC ошибок
                             addLog("\uD83D\uDD39  " + fullCalib);
+                            processDtcErrors(data);
                             Arrays.fill(data, null);
                             Arrays.fill(wordss, null);
-                        } else {
-                            // addLog("❌ 30 - N/A");
+
                         }
                     }
-
 
                     /// чтение ошибок DTC
                     if (command.startsWith("0319023B")) {
@@ -890,12 +901,8 @@ public class RenaultAirbagContinentalRh850Activity extends AppCompatActivity {
                             if (Objects.equals(wordss[1], "10")) {
                                 System.arraycopy(wordss, 6, data, 0, 3);
                                 //processDtcErrors(data); // Обработка DTC ошибок
-                                for (int i = 0; i < 10000000; i++) {
-                                    if (i == 1000000) {
-                                        continuation2();
-                                        i = 0;
-                                    }
-                                }
+                                continuation2();
+
                             }
                             addLog("✅ DTC: ");
                         } else {
@@ -935,21 +942,6 @@ public class RenaultAirbagContinentalRh850Activity extends AppCompatActivity {
                             //Arrays.fill(data, null);
                             String[] wordss = responseStr.split(" ");
                             System.arraycopy(wordss, 6, data, 0, 3);
-//                            for (int i = 6; i < wordss.length; i++) {
-//                                if (!wordss[i].startsWith("772") &&
-//                                        !wordss[i].startsWith("21") &&
-//                                        !wordss[i].startsWith("22") &&
-//                                        !wordss[i].startsWith("55")) {
-//                                    // Удаляем 772 вхождения "7E8" из строки
-//                                    String cleanedString = wordss[i].replace("772", "");
-//                                    vinBuilder.append(extractVinFromResponse(cleanedString));
-//                                }
-//                            }
-//
-//                            String fullCalib = vinBuilder.toString();
-//                            vinBuilder.setLength(0);
-//                            //addLog("✅ VIN:  " + fullCalib);
-
                             continuation();
                             addLog("✅ Part Num:  ");
                         } else {
@@ -962,22 +954,6 @@ public class RenaultAirbagContinentalRh850Activity extends AppCompatActivity {
                             //Arrays.fill(data, null);
                             String[] wordss = responseStr.split(" ");
                             System.arraycopy(wordss, 6, data, 0, 3);
-//                            for (int i = 6; i < wordss.length; i++) {
-//                                if (!wordss[i].startsWith("772") &&
-//                                        !wordss[i].startsWith("21") &&
-//                                        !wordss[i].startsWith("22") &&
-//                                        !wordss[i].startsWith("23") &&
-//
-//                                        !wordss[i].startsWith("55")) {
-//                                    // Удаляем 772 вхождения "7E8" из строки
-//                                    String cleanedString = wordss[i].replace("772", "");
-//                                    vinBuilder.append(extractVinFromResponse(cleanedString));
-//                                }
-//                            }
-//
-//                            String fullCalib = vinBuilder.toString();
-//                            vinBuilder.setLength(0);
-//                            //addLog("✅ VIN:  " + fullCalib);
                             continuation();
                             addLog("✅ SW:  ");
 
@@ -992,20 +968,6 @@ public class RenaultAirbagContinentalRh850Activity extends AppCompatActivity {
                             //Arrays.fill(data, null);
                             String[] wordss = responseStr.split(" ");
                             System.arraycopy(wordss, 6, data, 0, 3);
-//                            for (int i = 6; i < wordss.length; i++) {
-//                                if (!wordss[i].startsWith("772") &&
-//                                        !wordss[i].startsWith("21") &&
-//                                        !wordss[i].startsWith("22") &&
-//                                        !wordss[i].startsWith("55")) {
-//                                    // Удаляем 772 вхождения "7E8" из строки
-//                                    String cleanedString = wordss[i].replace("772", "");
-//                                    vinBuilder.append(extractVinFromResponse(cleanedString));
-//                                }
-//                            }
-//
-//                            String fullCalib = vinBuilder.toString();
-//                            vinBuilder.setLength(0);
-//                            //addLog("✅ VIN:  " + fullCalib);
                             continuation();
                             addLog("✅ VIN:  ");
 
@@ -1030,7 +992,7 @@ public class RenaultAirbagContinentalRh850Activity extends AppCompatActivity {
                                 btnIdenECU.setCompoundDrawableTintList(ColorStateList.valueOf(Color.GRAY));
                                 return;
                             } else if (Objects.equals(pid[2], "50")) {
-                                addLog("✅ ECU Connect ... OK.");
+                                addLog("\uD83D\uDE97  ECU Connect ... OK.");
                                 String[] wordss = responseStr.split(" ");
                                 //addLog("✅ ECU address/CAN id: " + wordss[0] + "\n");
                                 btnIdenECU.setTextColor(Color.WHITE);
@@ -1039,6 +1001,7 @@ public class RenaultAirbagContinentalRh850Activity extends AppCompatActivity {
                                 btnReadDTC.setTextColor(Color.WHITE);
                                 btnClearDTC.setTextColor(Color.WHITE);
                                 btn_erase_crash.setTextColor(Color.WHITE);
+                                btnIdenECU.setCompoundDrawableTintList(ColorStateList.valueOf(Color.YELLOW));
                             }
                         } else {
                             addLog("❌ ECU Connect ... Error. 2");
@@ -1094,39 +1057,47 @@ public class RenaultAirbagContinentalRh850Activity extends AppCompatActivity {
     // Метод для обработки DTC ошибок
     private void processDtcErrors(String[] dtcData) {
 
-        if (dtcData == null || dtcData.length < 3) return;
+//        String byte1 = dtcData[0];
+//        String byte2 = dtcData[0 + 1];
+//        String byte3 = dtcData[0 + 2];
+//        String byte4 = dtcData[0 + 3];
 
-        try {
-            for (int i = 0; i < dtcData.length; i += 4) {
-                if (i + 1 >= dtcData.length) break;
-
-
-                String byte1 = dtcData[i];
-                String byte2 = dtcData[i + 1];
-
-                if (byte1 == null || byte2 == null ||
-                        byte1.equals("00") || byte2.equals("00") ||
-                            byte1.equals("772") || byte2.equals("772") ||
-                            byte1.equals("21") || byte2.equals("21") ||
-                            byte1.equals("22") || byte2.equals("22") ||
-                            byte1.equals("23") || byte2.equals("23") ||
-                            byte1.equals("24") || byte2.equals("24") ||
-                           byte1.equals("FF") || byte2.equals("FF")) {
-                    continue; // Пропускаем пустые коды
-                }
-
-                String dtcCode = convertToRenaultDTC(byte1, byte2);
-                String dtcDescription = getDtcDescription(dtcCode);
-
-                // addLog("🚨 " + dtcCode + " - " + dtcDescription);
-
-                addLog("\uD83D\uDD39  " + byte1 + byte2);
-            }
-
-
-        } catch (Exception e) {
-            addLog("❌ Ошибка обработки DTC: " + e.getMessage());
-        }
+//        if (dtcData == null || dtcData.length < 3) return;
+//
+//        try {
+//            for (int i = 0; i < dtcData.length; i += 2) {
+//                if (i + 1 >= dtcData.length) break;
+//
+//
+//
+//
+//                String byte1 = dtcData[i];
+//                String byte2 = dtcData[i + 1];
+//
+//
+//                if (byte1 == null || byte2 == null ||
+//                        byte1.equals("00") || byte2.equals("00") ||
+//                        byte1.equals("772") || byte2.equals("21") ||
+//                        byte1.equals("772") || byte2.equals("22") ||
+//                        byte1.equals("772") || byte2.equals("23") ||
+//                        byte1.equals("772") || byte2.equals("24") ||
+//                        byte1.equals("772") || byte2.equals("25") ||
+//                        byte1.equals("FF") || byte2.equals("FF")) {
+//                    continue; // Пропускаем пустые коды
+//                }
+//
+//                String dtcCode = convertToRenaultDTC(byte1, byte2);
+//                String dtcDescription = getDtcDescription(dtcCode);
+//
+//                // addLog("🚨 " + dtcCode + " - " + dtcDescription);
+//
+        //addLog("\uD83D\uDD39  " + byte1 + byte2 + byte3 + byte4);
+//            }
+//
+//
+//        } catch (Exception e) {
+//            addLog("❌ Ошибка обработки DTC: " + e.getMessage());
+//        }
     }
 
     // Конвертация hex в Renault DTC формат

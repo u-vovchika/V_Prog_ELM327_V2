@@ -27,14 +27,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.annotation.RequiresPermission;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -111,6 +108,10 @@ public class RenaultAirbagContinentalSpcActivity extends AppCompatActivity {
         buttonBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+//                SharedPreferences.Editor editor = sharedPreferences.edit();
+//                editor.clear(); // стираем данные textViewModel
+//                editor.apply(); // записываем данные после очистки textViewModel
+//                finish();// завершения процесса
                 Intent intent = new Intent(RenaultAirbagContinentalSpcActivity.this, RenaultAirbagMenuActivity.class);
                 startActivity(intent);
             }
@@ -165,7 +166,7 @@ public class RenaultAirbagContinentalSpcActivity extends AppCompatActivity {
                 clearDTC();
             }
         });
-        /// кнопка LOCK
+        /// /кнопка LOCK
         btn_lock.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -173,7 +174,7 @@ public class RenaultAirbagContinentalSpcActivity extends AppCompatActivity {
                 EcuLock();
             }
         });
-        /// кнопка UNLOCK
+        /// /кнопка UNLOCK
         btn_unlock.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -181,7 +182,7 @@ public class RenaultAirbagContinentalSpcActivity extends AppCompatActivity {
                 EcuUnLock();
             }
         });
-        /// /кнопка поиск чистка КРАШ
+        /// /кнопка поиск ECU
         btn_erase_crash.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -193,28 +194,30 @@ public class RenaultAirbagContinentalSpcActivity extends AppCompatActivity {
     }
 
 
-    /// функция разблокировки блока
     private void EcuUnLock() {
-        sendCommand("10C0", resp10C0 -> {  /// начальная идентификация
-            Thread.sleep(700);
-            sendCommand("3B1000", response122 -> {  ///
-                Thread.sleep(700);
+        sendCommand("0210C0", resp10C0 -> {  /// начальная идентификация
+            Thread.sleep(100);
+            sendCommand("033B1000", response122 -> {  ///
+                Thread.sleep(500);
 
             });
         });
     }
-    /// функция блокировки блока
+
     private void EcuLock() {
-        sendCommand("10C0", resp10C0 -> {  /// начальная идентификация
-            Thread.sleep(700);
-            sendCommand("3B10FF", response122 -> {  ///
-                Thread.sleep(700);
+
+        sendCommand("0210C0", resp10C0 -> {  /// начальная идентификация
+            Thread.sleep(100);
+            sendCommand("033B10FF", response122 -> {  ///
+                Thread.sleep(500);
 
             });
         });
     }
+
+
     /// функция чистки КРАШ
-    private void eraseCRASH() {
+    private void eraseCRASH2() {
         sendCommand("10C0", resp10C0 -> {  /// начальная идентификация
             Thread.sleep(700);
             sendCommand("2130", response122 -> {  ///
@@ -227,46 +230,50 @@ public class RenaultAirbagContinentalSpcActivity extends AppCompatActivity {
         });
     }
 
-    /// функция настройки адаптера
+    private void eraseCRASH() {
+        sendCommand("0210C0", resp10C0 -> {  /// начальная идентификация
+            Thread.sleep(100);
+            sendCommand("022130", response122 -> {  ///
+                Thread.sleep(300);
+                sendCommand("063BA01304197600", resp2EA02A12071969 -> {  /// сТИРАЕМ краш
+                    Thread.sleep(300);
+                    sendCommand("0414FFFFFF", resp14FFFFFF -> {  /// Clear DTC
+                        //addLog("\uD83D\uDD0D 1_ " + resp14FFFFFF);
+                        Thread.sleep(500);
+
+                    });
+                });
+            });
+        });
+    }
+
+
     private void scanECU() {
         //((ArrayAdapter) logListView.getAdapter()).clear();
-        addLog("\uD83D\uDEE0 Config the Adapter ...");
-        sendCommand("ATH1", responseATH1 -> {  /// начальная идентификация
-            //addLog("\uD83D\uDD0D ATH1 Вкл-ть загол-ки: " + responseATH1);
-            Thread.sleep(200);
-            sendCommand("ATS1", responseATS1 -> {  /// начальная идентификация
-                //addLog("\uD83D\uDD0D ATS1 станд-е форм-е: " + responseATS1);
-                Thread.sleep(200);
-                sendCommand("ATSP6", responseATSP6 -> {  /// Установка протокола CAN 11 бит 500 кбит/сек
-                    //addLog("\uD83D\uDD0D ATSP6 CAN 500 кбит/с: " + responseATSP6);
-                    Thread.sleep(200);
-                    sendCommand("ATSH752", responseATSH752 -> {  /// Установка протокола CAN 11 бит 500 кбит/сек
-                        //addLog("\uD83D\uDD0D ATSH752 ID отпр-ля: " + responseATSH752);
-                        Thread.sleep(200);
-                        //sendCommand("ATCRA772", responseATCRA772 -> {  /// Установка протокола CAN 11 бит 500 кбит/сек
-                        sendCommand("ATCRA000", responseATCRA772 -> {  /// Установка протокола CAN 11 бит 500 кбит/сек
-                            //addLog("\uD83D\uDD0D ATCRA772 ID ответ: " + responseATCRA772);
-                            Thread.sleep(200);
-                            sendCommand("ATCF772", responseATCF772 -> {  /// Установка протокола CAN 11 бит 500 кбит/сек
-                                //addLog("\uD83D\uDD0D ATCF772 фильтр 772: " + responseATCF772);
-                                Thread.sleep(200);
-                                sendCommand("ATAR", responseATAR -> {  /// Включить автоматическое распознавание получателя
-                                    //addLog("\uD83D\uDD0D ATAR фильтр 772: " + responseATCF772);
-                                    Thread.sleep(200);
-                                    sendCommand("ATAL", responseATAL -> {  /// Включить автоматическую обработку многокадровой передачи (ISO 15765-2)
-                                        //addLog("\uD83D\uDD0D (ISO 15765-2): " + responseATAL);
-                                        Thread.sleep(200);
-                                        sendCommand("ATCAF1", responseATCAF1 -> {  /// Включить автоматический форматирование длинных ответов
-                                            //addLog("\uD83D\uDD0D ATCAF1 длинных ответов:  " + responseATCAF1);
-                                            Thread.sleep(200);
-                                            sendCommand("ATSTFFFF", responseATST2000 -> {  /// Установить таймаут ожидания ответа.
-                                                //addLog("\uD83D\uDD0D ATST90 таймаут 90:  " + responseATST2000);
-                                                Thread.sleep(200);
-                                                sendCommand("ATFCSD10", responseATFCSD500 -> {  /// Установить таймаут между кадрами ответа.
-                                                    //addLog("\uD83D\uDD0D ATFCSD50 таймаут 50:  " + responseATFCSD500);
-                                                    addLog("✅ Config the Adapter ... OK.");
-                                                    Thread.sleep(200);
-                                                    readIden();
+        addLog("🛠️ Config the Adapter ...");
+        sendCommand("AT H1", responseATH1 -> {  // Включить заголовки
+            sendCommand("AT S1", responseATS1 -> {  // Стандартное форматирование
+                sendCommand("AT SP 6", responseATSP6 -> {  // Протокол CAN 11bit 500kbps
+                    // 🧹 КРИТИЧЕСКИ ВАЖНО: Отключаем байт длины
+                    sendCommand("AT CAF 0", responseATCAF0 -> {  // 📍 Выключаем автоформатирование
+                        sendCommand("AT CFC 0", responseATCFC0 -> {  // 📍 Отключаем Flow Control
+                            sendCommand("AT CM 0", responseATCM0 -> {  // 📍 ОСНОВНАЯ КОМАНДА - убирает байт длины
+                                // ⚙️ Продолжаем стандартную настройку
+                                sendCommand("AT SH 752", responseATSH752 -> {  // ID отправителя
+                                    sendCommand("AT CRA 772", responseATCRA772 -> {  // Фильтр ID получателя
+                                        sendCommand("AT CF 772", responseATCF772 -> {  // Маска фильтра
+                                            sendCommand("AT AR", responseATAR -> {  // Автораспознавание
+                                                sendCommand("AT AL", responseATAL -> {  // Многокадровая передача
+                                                    sendCommand("AT ST FFFF", responseATST2000 -> {  // Таймаут
+                                                        sendCommand("AT FCSD 10", responseATFCSD500 -> {  // Таймаут между кадрами
+                                                            addLog("✅ Config the Adapter ... OK.");
+                                                            //addLog("🧹 Байт длины ОТКЛЮЧЕН (CM 0, CAF 0, CFC 0)");
+                                                            sendCommand("ATE0", respATE0 -> {  /// эХО ВЫКЛЮЧЕНО"
+                                                                //addLog(" Адаптер: " + respATE0);
+                                                                readIden();
+                                                            });
+                                                        });
+                                                    });
                                                 });
                                             });
                                         });
@@ -279,55 +286,63 @@ public class RenaultAirbagContinentalSpcActivity extends AppCompatActivity {
             });
         });
     }
-    /// функция чистки ошибок
+
     private void clearDTC() {
-        sendCommand("1081", response0100 -> {  /// начальная идентификация
-            Thread.sleep(700);
-            sendCommand("ATAR", response122 -> {  /// Запрос PIDs
-                sendCommand("14FFFFFF", response17 -> {  /// Clear DTC
-
-                });
+        sendCommand("0210C0", resp1003 -> {  /// начальная идентификация
+            //sendCommand("3E00", resp3E -> {  /// начальная идентификация
+            Thread.sleep(100);
+            sendCommand("0414FFFFFF", resp14FFFFFF -> {  /// Clear DTC
+                //addLog("\uD83D\uDD0D 1_ " + resp14FFFFFF);
+                Thread.sleep(100);
             });
         });
     }
-    /// функция чтения ошибок
+
     private void readDtc() {
-        sendCommand("10C0", response1003 -> {  /// начальная идентификация
-            //sendCommand("3E01", response1003 -> {  /// начальная идентификация
-            //addLog("\uD83D\uDD0D Connect ECU ..." + response1003);
-            Thread.sleep(700);
-            addLog("\uD83D\uDD0D Текущие ошибки");
-            sendCommand("19023B", resp19023B -> {  /// Текущие ошибки
-                addLog("\uD83D\uDD0D DTC ..." + resp19023B);
-                Thread.sleep(700);
+        //sendCommand("021003", response1003 -> {  /// начальная идентификация
+        sendCommand("0210C0", resp3E00 -> {  /// начальная идентификация
+            Thread.sleep(100);
+            sendCommand("0319023B", resp190201 -> {  /// Текущие ошибки
+                Thread.sleep(100);
             });
         });
     }
-    /// функция команды "Дай еще данные"
-    private void continuation() {
-        sendCommand("30000000", response30 -> {  ///
-            addLog(" " + response30);
-            // Продолжаем запрашивать данные
 
+
+    private void continuation() {
+        // Продолжаем запрашивать данные
+        sendCommand("30", resp30 -> {  ///
+            Thread.sleep(100);
         });
     }
-    /// функция чтения идентов блока номер и вин
+
+    private void continuation2() {
+        // Продолжаем запрашивать данные
+        sendCommand("3000", resp3000 -> {  ///
+            Thread.sleep(100);
+        });
+    }
+
     private void readIden() {
         ((ArrayAdapter) logListView.getAdapter()).clear();
-        sendCommand("ATRV", respATRV -> {  ///
-            sendCommand("1081", response1003 -> {  ///
-//            //addLog("1003:  " + response1003);
-                Thread.sleep(500);
-                sendCommand("2180", response22E310 -> {  ///
-                    //addLog("22E310:  " + response22E310);
-                    Thread.sleep(700);
-                    sendCommand("2181", response22E300 -> {  ///
-
+        sendCommand("AT RV", respATRV -> {  // Чтение напряжения адаптера
+            Thread.sleep(100);
+            sendCommand("021081", response1003 -> {  // Запрос данных ECU
+                Thread.sleep(100);
+                sendCommand("022180", resp22F187 -> {  // Запрос специфичных данных
+                    Thread.sleep(300);
+                    sendCommand("022181", resp22F18C -> {  // Запрос специфичных данных
+                        Thread.sleep(300);
+//                        sendCommand("0322F190", resp22F190 -> {  // Запрос специфичных данных
+//                            Thread.sleep(300);
+//
+//                        });
                     });
                 });
             });
         });
     }
+
 
     /// //////////////////////////////////////////////////////////////////////////////////
     /// Метод для поиска и отображения доступных Bluetooth устройств
@@ -338,12 +353,14 @@ public class RenaultAirbagContinentalSpcActivity extends AppCompatActivity {
             Toast.makeText(this, "Bluetooth не поддерживается", Toast.LENGTH_SHORT).show();
             return;
         }
+
         // Проверяем, включен ли Bluetooth
         if (!bluetoothAdapter.isEnabled()) {
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
             return;
         }
+
         // Очищаем предыдущий список устройств
         availableDevices.clear();
 
@@ -352,6 +369,7 @@ public class RenaultAirbagContinentalSpcActivity extends AppCompatActivity {
         if (pairedDevices.size() > 0) {
             availableDevices.addAll(pairedDevices);
         }
+
         // Показываем диалог выбора устройства
         showDeviceSelectionDialog();
     }
@@ -370,6 +388,7 @@ public class RenaultAirbagContinentalSpcActivity extends AppCompatActivity {
         for (BluetoothDevice device : availableDevices) {
             deviceNames.add(device.getName() + "\n" + device.getAddress());
         }
+
         // Если устройств нет, показываем сообщение
         if (deviceNames.isEmpty()) {
             deviceNames.add("No devices found");
@@ -459,7 +478,7 @@ public class RenaultAirbagContinentalSpcActivity extends AppCompatActivity {
         }
     };
 
-    // метод подключения к ELM327
+    // Переделанный метод подключения к ELM327
     @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
     private void connectToELM327(BluetoothDevice device) {
         if (device == null) {
@@ -490,21 +509,27 @@ public class RenaultAirbagContinentalSpcActivity extends AppCompatActivity {
                     Toast.makeText(this, "\uD83D\uDEE0 Connected to " + device.getName(), Toast.LENGTH_SHORT).show();
                 });
 
-                Thread.sleep(500);
+                // Thread.sleep(500);
+
+
                 // Сброс адаптера и отключение эхо
                 sendCommand("ATZ\rATE0\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r", respATZATE0 -> {
-                    Thread.sleep(1000);
-                    sendCommand("ATE0", respATE0 -> {
+                    Thread.sleep(1200);
+                    sendCommand("ATE0", respATE0 -> {  /// эХО ВЫКЛЮЧЕНО"
                         addLog(" Адаптер: " + respATE0);
-                        Thread.sleep(200);
+                        //Thread.sleep(100);
                         sendCommand("STI", respSTI2 -> {
                             if (Objects.equals(respSTI2, "?\r\r>")) {
-                                addLog(" Адаптер: Not the original");
+                                addLog("⚠\uFE0F Адаптер: Not the original");
                             } else {
-                                addLog(" Адаптер: Original ");
+                                addLog("✅ Адаптер: Original ");
                             }
-                            Thread.sleep(200);
-                            scanECU();
+                            //Thread.sleep(100);
+                            sendCommand("AT DP", respATDP -> {  /// автоматически определять соответствующий протокол OBD
+                                addLog("\uD83D\uDD0D " + respATDP);
+                                //Thread.sleep(100);
+                                scanECU();
+                            });
                         });
                     });
                 });
@@ -573,9 +598,12 @@ public class RenaultAirbagContinentalSpcActivity extends AppCompatActivity {
 
 
     private StringBuilder vinBuilder = new StringBuilder();
+    /// /////////////////////////////////////////////////////////////////////////////
+    String[] data = new String[50];
+
 
     @SuppressLint({"UseCompatTextViewDrawableApis", "SetTextI18n"})
-    private void sendCommand(String command, ResponseCallback callback) {
+    private void sendCommand(String command, RenaultAirbagContinentalRh850Activity.ResponseCallback callback) {
         if (outputStream == null) {
             showToast("❌ No connection!");
             return;
@@ -597,17 +625,20 @@ public class RenaultAirbagContinentalSpcActivity extends AppCompatActivity {
                 outputStream.flush();
                 // Чтение ответа
                 StringBuilder response = new StringBuilder();
+                ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
                 byte[] buffer = new byte[1024];
                 int bytes;
 
                 // Ждем ответа (можно добавить таймаут)
-                Thread.sleep(500); // Даем адаптеру время на ответ
+                Thread.sleep(330); // Даем адаптеру время на ответ
                 while (inputStream.available() > 0) {
                     bytes = inputStream.read(buffer);
                     response.append(new String(buffer, 0, bytes));
+                    byteBuffer.write(buffer, 0, bytes);
                 }
 
                 final String responseStr = response.toString().trim();
+                final byte[] responseBytes = byteBuffer.toByteArray();
                 // Используем handler для обновления UI из фонового потока
                 handler.post(() -> {
 //                    addLog(">> " + command);
@@ -657,12 +688,12 @@ public class RenaultAirbagContinentalSpcActivity extends AppCompatActivity {
                     }
 
                     /// напряжение адапторе
-                    if (command.equals("ATRV")) {
-                        addLog("✅ Voltage: " + responseStr);
+                    if (command.equals("AT RV")) {
+                        addLog("🔋 Voltage: " + responseStr);
                     }
 
                     /// напряжение ECU
-                    if (command.equals("01421")) {
+                    if (command.equals("03014210")) {
                         String[] wordss = responseStr.split(" ");
                         if (Objects.equals(wordss[2], "41")) {
                             String hex = responseStr.split(" ")[4] + responseStr.split(" ")[5];
@@ -672,46 +703,30 @@ public class RenaultAirbagContinentalSpcActivity extends AppCompatActivity {
                         }
                     }
 
-                    /// Clear DTC/////////////
-                    if (command.startsWith("14FFFFFF")) {
+                    /// //////////////////////////////////////////////////////////////////////////////////
+                    /// Clear DTC /////////////
+                    if (command.startsWith("0414FFFFFF")) {
                         if (responseStr.startsWith("772")) {
                             String[] wordss = responseStr.split(" ");
-                            if (Objects.equals(wordss[2], "54")) {
-                                addLog("✅ Erase DTC ... OK.");
-                            } else {
-                                addLog("❌ Erase DTC ... ERROR.  \n⚠\uFE0F " + wordss[1] + wordss[2] + wordss[3] + wordss[4]);
+                            if (wordss.length > 3) {
+                                if (Objects.equals(wordss[2], "7F")) {
+                                    if (Objects.equals(wordss[4], "78")) {
+//                                        if (Objects.equals(wordss[8], "54")) {
+//                                            addLog("✅ Erase DTC ... OK.");
+//                                        }
+                                    }
+                                }
+                                if (Objects.equals(wordss[2], "54")) {
+                                    addLog("✅ Erase DTC ... OK.");
+                                }
                             }
                         } else {
                             addLog("❌ Erase DTC - N/A");
                         }
                     }
-                    /// Read DTC/////////////
-                    if (command.startsWith("19023B")) {
-                        if (responseStr.startsWith("772")) {
-                            String[] wordss = responseStr.split(" ");
-                            if (wordss.length > 5) {
-                                if (Objects.equals(wordss[2], "7F")) {
-                                    addLog("❌ DTC - Answer Error    " + wordss[2]);
-                                } else {
-                                    if (Objects.equals(wordss[1], "59")) {
-                                        addLog("\uD83D\uDD39 " + wordss[4] + wordss[5]);
-                                    }
-                                    if (Objects.equals(wordss[1], "10")) {
-                                        addLog("\uD83D\uDD39 " + wordss[6] + wordss[7] + "-" + wordss[8]);
-                                        //continuation();
-                                    }
 
-                                }
-
-                            } else {
-                                addLog("✅ DTC ... No Errors.");
-                            }
-                        } else {
-                            addLog("❌ DTC - N/A");
-                        }
-                    }
                     /// ERASE CRASH /////////////
-                    if (command.startsWith("3BA013041976")) {
+                    if (command.startsWith("063BA013041976")) {
                         if (responseStr.startsWith("772")) {
                             String[] wordss = responseStr.split(" ");
                             //if (wordss.length > 5) {
@@ -726,9 +741,9 @@ public class RenaultAirbagContinentalSpcActivity extends AppCompatActivity {
                         }
                     }
 
-
+                    /// ///////////////////////////////////////////////////////////////////////////////////////////////
                     /// LOCK /////////////
-                    if (command.startsWith("3B10FF")) {
+                    if (command.startsWith("033B10FF")) {
                         if (responseStr.startsWith("772")) {
                             String[] wordss = responseStr.split(" ");
                             //if (wordss.length > 5) {
@@ -742,8 +757,8 @@ public class RenaultAirbagContinentalSpcActivity extends AppCompatActivity {
                             addLog("❌ ECU Lock - N/A");
                         }
                     }
-                    /// LOCK /////////////
-                    if (command.startsWith("3B1000")) {
+                    /// UNLOCK /////////////
+                    if (command.startsWith("033B1000")) {
                         if (responseStr.startsWith("772")) {
                             String[] wordss = responseStr.split(" ");
                             //if (wordss.length > 5) {
@@ -757,58 +772,202 @@ public class RenaultAirbagContinentalSpcActivity extends AppCompatActivity {
                             addLog("❌ ECU UnLock - N/A");
                         }
                     }
-/// /////////////////////////////////////////////////////////////////////////////////////////////////
-/// идентификация ///////////////////////////////////////////////////////////////////////////////////////
-                    if (command.startsWith("2180")) {
-                        if (responseStr.startsWith("772")) {
-                            String[] wordss = responseStr.split(" ");
-                            StringBuilder sVim = new StringBuilder(Arrays.toString(wordss));
-                            for (int i = 5; i < wordss.length; i++) {
-                                if (!wordss[i].startsWith("772") &&
-                                        !wordss[i].startsWith("21") &&
-                                        !wordss[i].startsWith("22") &&
-                                        !wordss[i].startsWith("55")) {
-                                    // Удаляем ВСЕ вхождения "772" из строки
-                                    String cleanedString = wordss[i].replace("772", "");
-                                    vinBuilder.append(extractVinFromResponse(cleanedString));
-                                }
-                            }
-                            String fullVin = vinBuilder.toString();
-                            vinBuilder.setLength(0);
-                            addLog("✅ VER HW:  " + fullVin);
-                        } else {
-                            addLog("❌ VER HW - N/A");
-                        }
-                    }
 
-                    if (command.startsWith("2181")) {
+                    /// идентификация ///////////////////////////////////////////////////////////////////////////////////////
+                    if (command.equals("30")) {
                         if (responseStr.startsWith("772")) {
                             String[] wordss = responseStr.split(" ");
-                            StringBuilder sVim = new StringBuilder(Arrays.toString(wordss));
-                            for (int i = 5; i < wordss.length; i++) {
-                                if (!wordss[i].startsWith("772") &&
-                                        !wordss[i].startsWith("21") &&
-                                        !wordss[i].startsWith("22") &&
-                                        !wordss[i].startsWith("55")) {
-                                    // Удаляем ВСЕ вхождения "7E8" из строки
-                                    String cleanedString = wordss[i].replace("772", "");
+                            System.arraycopy(wordss, 0, data, 4, wordss.length);
+                            for (int i = 0; i < data.length; i++) {  // 21
+                                if (Objects.equals(data[i], "00") || Objects.equals(data[i], "FF"))
+                                    break;
+                                if (data[i] == null) {
+                                    break;
+                                } else if (!data[i].startsWith("772") &&
+                                        !data[i].startsWith("21") &&
+                                        !data[i].startsWith("22") &&
+                                        !data[i].startsWith("23") &&
+                                        !data[i].startsWith("24") &&
+                                        !data[i].startsWith("FF")) {
+                                    // Удаляем 772 вхождения "7E8" из строки
+                                    String cleanedString = data[i].replace("772", "");
                                     vinBuilder.append(extractVinFromResponse(cleanedString));
+                                    //vinBuilder.append(cleanedString);
                                 }
                             }
                             String fullCalib = vinBuilder.toString();
                             vinBuilder.setLength(0);
-                            addLog("✅ VIN:  " + fullCalib);
+                            //addLog("✅ 30:  " + Arrays.toString(data));
+                            addLog("\uD83D\uDD39  " + fullCalib);
+                            Arrays.fill(data, null);
+                            Arrays.fill(wordss, null);
+                        } else {
+                            // addLog("❌ 30 - N/A");
+                        }
+                    }
+
+
+                    /// continuation2(); ///////////////////////////////////////////////////////
+                    if (command.equals("3000")) {
+                        if (responseStr.startsWith("772")) {
+                            String[] wordss = responseStr.split(" ");
+                            System.arraycopy(wordss, 0, data, 3, wordss.length);
+                            // Проходим по всем данным и проверяем каждую возможную пару
+                            for (int i = 0; i < data.length; i++) {
+                                if (data[i] == null) break;
+                                if ("20".equals(data[i]) || "FF".equals(data[i])) break;
+
+                                // Пропускаем "772" и следующие за ним 21,22,23,24,25
+                                if ("772".equals(data[i])) {
+                                    // Проверяем следующий элемент, если он существует
+                                    if (i + 1 < data.length && data[i + 1] != null) {
+                                        String nextValue = data[i + 1];
+                                        if ("21".equals(nextValue) || "22".equals(nextValue) ||
+                                                "23".equals(nextValue) || "24".equals(nextValue) ||
+                                                "25".equals(nextValue)) {
+                                            i++; // Пропускаем и 772 и следующий элемент
+                                            continue;
+                                        }
+                                    }
+                                    // Если после 772 нет 21-25, то пропускаем только 772
+                                    continue;
+                                }
+                                // Также пропускаем отдельные значения 21,22,23,24,25
+                                if ("21".equals(data[i]) || "22".equals(data[i]) ||
+                                        "23".equals(data[i]) || "24".equals(data[i]) ||
+                                        "25".equals(data[i])) {
+                                    continue;
+                                }
+
+                                data[i] = data[i].replace("772", "");
+                                // Добавляем все остальные значения
+                                vinBuilder.append(data[i]);
+
+                            }
+
+                            String fullCalib = vinBuilder.toString();
+                            vinBuilder.setLength(0);
+                            addLog("\uD83D\uDD39  " + fullCalib);
+                            processDtcErrors(data);
+                            Arrays.fill(data, null);
+                            Arrays.fill(wordss, null);
+
+                        }
+                    }
+
+                    /// чтение ошибок DTC
+                    if (command.startsWith("031902")) {
+                        if (responseStr.startsWith("772")) {
+                            String[] wordss = responseStr.split(" ");
+                            if (Objects.equals(wordss[2], "7F")) {
+                                //addLog("✅ DTC: 1  " + wordss[2] );
+                                if (Objects.equals(wordss[4], "78")) {
+                                    if (Objects.equals(wordss[10], "10")) {
+                                        System.arraycopy(wordss, 15, data, 0, 3);
+                                        continuation2();
+                                    }
+                                }
+                            }
+                            if (Objects.equals(wordss[1], "10")) {
+                                System.arraycopy(wordss, 6, data, 0, 3);
+                                //processDtcErrors(data); // Обработка DTC ошибок
+                                continuation2();
+                            }
+                            addLog("✅ DTC: ");
+                        } else if (responseStr.startsWith("NO")) {
+                            sendCommand("0319023B", resp3E01 -> {
+                            });
+                        } else {
+                            //readDtc();
+                            addLog("❌ DTC - N/A");
+                        }
+                    }
+//                    /// Read DTC/////////////
+//                    if (command.startsWith("0319023B")) {
+//                        if (responseStr.startsWith("772")) {
+//                            String[] wordss = responseStr.split(" ");
+//                            if (wordss.length > 5) {
+//                                if (Objects.equals(wordss[2], "7F")) {
+//                                    addLog("❌ DTC - Answer Error    " + wordss[2]);
+//                                } else {
+//                                    if (Objects.equals(wordss[1], "59")) {
+//                                        addLog("\uD83D\uDD39 " + wordss[4] + wordss[5]);
+//                                    }
+//                                    if (Objects.equals(wordss[1], "10")) {
+//                                        addLog("\uD83D\uDD39 " + wordss[6] + wordss[7] + "-" + wordss[8]);
+//                                        //continuation();
+//                                    }
+//
+//                                }
+//
+//                            } else {
+//                                addLog("✅ DTC ... No Errors.");
+//                            }
+//                        } else {
+//                            addLog("❌ DTC - N/A");
+//                        }
+//                    }
+
+
+                    if (command.startsWith("0322A002")) {
+                        if (responseStr.startsWith("772")) {
+                            String[] wordss = responseStr.split(" ");
+                            System.arraycopy(wordss, 6, data, 0, 3);
+                            for (int i = 6; i < wordss.length; i++) {
+                                if (!wordss[i].startsWith("772") &&
+                                        !wordss[i].startsWith("21") &&
+                                        !wordss[i].startsWith("22") &&
+                                        !wordss[i].startsWith("55")) {
+                                    // Удаляем 772 вхождения "7E8" из строки
+                                    String cleanedString = wordss[i].replace("772", "");
+                                    vinBuilder.append(extractVinFromResponse(cleanedString));
+                                }
+                            }
+
+                            String fullCalib = vinBuilder.toString();
+                            vinBuilder.setLength(0);
+                            //addLog("✅ VIN:  " + fullCalib);
+
+                            continuation2();
+                            //addLog("✅ !!!:  ");
+                        } else {
+                            addLog("❌ ident - N/A");
+                        }
+                    }
+
+
+                    if (command.startsWith("022180")) {
+                        if (responseStr.startsWith("772")) {
+                            //Arrays.fill(data, null);
+                            String[] wordss = responseStr.split(" ");
+                            System.arraycopy(wordss, 5, data, 0, 4);
+                            continuation();
+                            addLog("✅ Part Num:  ");
+                        } else {
+                            addLog("❌ Part Num - N/A");
+                        }
+                    }
+
+
+                    if (command.startsWith("022181")) {
+                        if (responseStr.startsWith("772")) {
+                            String[] wordss = responseStr.split(" ");
+                            System.arraycopy(wordss, 5, data, 0, 4);
+                            continuation();
+                            addLog("✅ VIN:  ");
+
                         } else {
                             addLog("❌ VIN - N/A");
                         }
                     }
-/// ///////////////////////////////////////////////////////////////////////////////////////////////////
+
+                    ///////////////////////////////////////////////////////////////////////////////////
                     String[] pid;
-                    if (command.startsWith("1081") || command.startsWith("10C0")) {
+                    if (command.startsWith("021081") || command.startsWith("0210C0")) {
                         if (responseStr.startsWith("772")) {
                             pid = responseStr.split(" ");
                             if (!Objects.equals(pid[2], "50")) {
-                                addLog("❌ ECU Connect ... ERROR.");
+                                addLog("❌ ECU Connect ... Error.");
                                 btnIdenECU.setTextColor(Color.GRAY);
                                 btn_lock.setTextColor(Color.GRAY);
                                 btn_unlock.setTextColor(Color.GRAY);
@@ -818,7 +977,7 @@ public class RenaultAirbagContinentalSpcActivity extends AppCompatActivity {
                                 btnIdenECU.setCompoundDrawableTintList(ColorStateList.valueOf(Color.GRAY));
                                 return;
                             } else if (Objects.equals(pid[2], "50")) {
-                                addLog("✅ ECU Connect ... OK.");
+                                addLog("\uD83D\uDE97  ECU Connect ... OK.");
                                 String[] wordss = responseStr.split(" ");
                                 //addLog("✅ ECU address/CAN id: " + wordss[0] + "\n");
                                 btnIdenECU.setTextColor(Color.WHITE);
@@ -827,9 +986,10 @@ public class RenaultAirbagContinentalSpcActivity extends AppCompatActivity {
                                 btnReadDTC.setTextColor(Color.WHITE);
                                 btnClearDTC.setTextColor(Color.WHITE);
                                 btn_erase_crash.setTextColor(Color.WHITE);
+                                btnIdenECU.setCompoundDrawableTintList(ColorStateList.valueOf(Color.YELLOW));
                             }
                         } else {
-                            addLog("❌ ECU Connect ... ERROR. 2");
+                            addLog("❌ ECU Connect ... Error. 2");
                             btnIdenECU.setTextColor(Color.GRAY);
                             btn_lock.setTextColor(Color.GRAY);
                             btn_unlock.setTextColor(Color.GRAY);
@@ -847,10 +1007,7 @@ public class RenaultAirbagContinentalSpcActivity extends AppCompatActivity {
                             String[] wordss = responseStr.split(" ");
                             StringBuilder sVim = new StringBuilder(Arrays.toString(wordss));
                             for (int i = 1; i < wordss.length; i++) {
-                                if (!wordss[i].startsWith("772") &&
-                                        !wordss[i].startsWith("21") &&
-                                        !wordss[i].startsWith("22") &&
-                                        !wordss[i].startsWith("55")) {
+                                if (!wordss[i].startsWith("772") && !wordss[i].startsWith("21") && !wordss[i].startsWith("22") && !wordss[i].startsWith("55")) {
                                     // Удаляем ВСЕ вхождения "772" из строки
                                     String cleanedString = wordss[i].replace("772", "");
                                     vinBuilder.append(extractVinFromResponse(cleanedString));
@@ -881,6 +1038,147 @@ public class RenaultAirbagContinentalSpcActivity extends AppCompatActivity {
         }).start();
     }
 
+
+    // Метод для обработки DTC ошибок
+    private void processDtcErrors(String[] dtcData) {
+
+//        String byte1 = dtcData[0];
+//        String byte2 = dtcData[0 + 1];
+//        String byte3 = dtcData[0 + 2];
+//        String byte4 = dtcData[0 + 3];
+
+//        if (dtcData == null || dtcData.length < 3) return;
+//
+//        try {
+//            for (int i = 0; i < dtcData.length; i += 2) {
+//                if (i + 1 >= dtcData.length) break;
+//
+//
+//
+//
+//                String byte1 = dtcData[i];
+//                String byte2 = dtcData[i + 1];
+//
+//
+//                if (byte1 == null || byte2 == null ||
+//                        byte1.equals("00") || byte2.equals("00") ||
+//                        byte1.equals("772") || byte2.equals("21") ||
+//                        byte1.equals("772") || byte2.equals("22") ||
+//                        byte1.equals("772") || byte2.equals("23") ||
+//                        byte1.equals("772") || byte2.equals("24") ||
+//                        byte1.equals("772") || byte2.equals("25") ||
+//                        byte1.equals("FF") || byte2.equals("FF")) {
+//                    continue; // Пропускаем пустые коды
+//                }
+//
+//                String dtcCode = convertToRenaultDTC(byte1, byte2);
+//                String dtcDescription = getDtcDescription(dtcCode);
+//
+//                // addLog("🚨 " + dtcCode + " - " + dtcDescription);
+//
+        //addLog("\uD83D\uDD39  " + byte1 + byte2 + byte3 + byte4);
+//            }
+//
+//
+//        } catch (Exception e) {
+//            addLog("❌ Ошибка обработки DTC: " + e.getMessage());
+//        }
+    }
+
+    // Конвертация hex в Renault DTC формат
+    private String convertToRenaultDTC(String byte1, String byte2) {
+        try {
+            int firstByte = Integer.parseInt(byte1, 16);
+            int secondByte = Integer.parseInt(byte2, 16);
+
+            // Первые два бита первого байта определяют тип ошибки
+            int errorType = (firstByte & 0xC0) >> 6;
+            String errorTypePrefix;
+
+            switch (errorType) {
+                case 0:
+                    errorTypePrefix = "P0";
+                    break; // Powertrain
+                case 1:
+                    errorTypePrefix = "P1";
+                    break; // Powertrain
+                case 2:
+                    errorTypePrefix = "B0";
+                    break; // Body
+                case 3:
+                    errorTypePrefix = "U0";
+                    break; // Network
+                default:
+                    errorTypePrefix = "P0";
+            }
+
+            // Оставшиеся биты формируют код ошибки
+            int dtcNumber = ((firstByte & 0x3F) << 8) | secondByte;
+
+            return errorTypePrefix + String.format("%04d", dtcNumber);
+
+        } catch (NumberFormatException e) {
+            return "INVALID_DTC";
+        }
+    }
+
+    // Получение описания ошибки для Renault
+    private String getDtcDescription(String dtcCode) {
+        if (dtcCode == null) return "Unknown error";
+
+        // База данных распространенных ошибок Renault
+        switch (dtcCode) {
+            // Примеры ошибок кузова (B-коды)
+            case "B1000":
+                return "ECU Malfunction";
+            case "B1001":
+                return "CAN Communication Bus Fault";
+            case "B1002":
+                return "LIN Communication Bus Fault";
+            case "B1016":
+                return "Airbag ECU Internal Fault"; // Ваш пример
+            case "B1020":
+                return "Seat Belt Pretensioner Fault";
+            case "B1030":
+                return "Driver Airbag Circuit Fault";
+            case "B1031":
+                return "Passenger Airbag Circuit Fault";
+            case "B1040":
+                return "Side Airbag Circuit Fault";
+
+            // Примеры сетевых ошибок
+            case "U1000":
+                return "CAN Communication Bus";
+            case "U1001":
+                return "CAN Bus Off";
+            case "U1002":
+                return "CAN Timeout";
+            case "U1100":
+                return "Communication with Engine ECU";
+            case "U1105":
+                return "Communication with Gearbox ECU";
+            case "U1110":
+                return "Communication with ABS/ESP ECU";
+            case "U1120":
+                return "Communication with Airbag ECU";
+
+            default:
+                // Если код неизвестен, определяем по префиксу
+                if (dtcCode.startsWith("P0") || dtcCode.startsWith("P1")) {
+                    return "Powertrain System Fault";
+                } else if (dtcCode.startsWith("B0") || dtcCode.startsWith("B1")) {
+                    return "Body System Fault";
+                } else if (dtcCode.startsWith("C0") || dtcCode.startsWith("C1")) {
+                    return "Chassis System Fault";
+                } else if (dtcCode.startsWith("U0") || dtcCode.startsWith("U1")) {
+                    return "Network Communication Fault";
+                } else {
+                    return "Unknown System Fault";
+                }
+        }
+    }
+
+
     private void addLog(String message) {
         logMessages.add(message);
         logAdapter.notifyDataSetChanged();
@@ -897,7 +1195,7 @@ public class RenaultAirbagContinentalSpcActivity extends AppCompatActivity {
         } catch (IOException e) {
             Log.e("ELM327", "Ошибка закрытия соединения", e);
         }
-    }
 
+    }
 
 }
