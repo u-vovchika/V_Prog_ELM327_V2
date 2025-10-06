@@ -122,7 +122,6 @@ public class RenaultAirbagContinentalSpcActivity extends AppCompatActivity {
         imageViewLogo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // setContentView(R.layout.lada_airbag_takata_spc_help); // Ваш XML-файл
                 Intent intent = new Intent(RenaultAirbagContinentalSpcActivity.this, RenaultAirbagContinentalSpcHelp.class);
                 startActivity(intent);
             }

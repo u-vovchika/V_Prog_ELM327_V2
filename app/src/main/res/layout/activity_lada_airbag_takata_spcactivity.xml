@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/dark_blue"
+    tools:context=".MainActivity">
+
+
+    <LinearLayout
+        android:id="@+id/containerECU"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:orientation="vertical"
+        android:padding="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.231"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="MissingConstraints">
+
+        <TextView
+            android:id="@+id/textViewModelEcu"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:layout_margin="1dp"
+            android:background="@color/dark_blue"
+            android:gravity="center"
+            android:text="Model SRS"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+
+        <LinearLayout
+            android:id="@+id/containerV_prog"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/button_back_univ"
+                android:layout_width="wrap_content"
+                android:layout_height="39dp"
+                android:layout_margin="5dp"
+                android:background="@drawable/button_stroke_dark_red_press_white"
+                android:paddingStart="40dp"
+                android:paddingEnd="20dp"
+                android:text="Назад"
+                android:textAllCaps="false"
+                android:textColor="@color/dark_red"
+                android:textSize="15sp" />
+
+            <ImageView
+                android:id="@+id/imageViewLogo"
+                android:layout_width="141dp"
+                android:layout_height="50dp"
+                android:layout_marginStart="20dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/vprog" />
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:id="@+id/container1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/imageBluetooth"
+                android:layout_width="41dp"
+                android:layout_height="43dp"
+                android:background="@drawable/outline_bluetooth_disabled_24"
+                android:backgroundTint="@color/gray"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tv_Connect"
+                android:layout_width="260dp"
+                android:layout_height="50dp"
+                android:background="@drawable/button_stroke_dark_red_press_white"
+                android:gravity="center"
+                android:layout_marginStart="20dp"
+                android:layout_margin="5dp"
+                android:padding="10dp"
+                android:text="Adapter"
+                android:textColor="@color/gray"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/container2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:id="@+id/line1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btnIdenECU"
+                    android:layout_width="145dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:background="@drawable/button_stroke_dark_red_press_white"
+                    android:drawableLeft="@drawable/twotone_directions_car_24"
+                    android:drawableTint="@color/gray"
+                    android:gravity="center"
+                    android:paddingStart="10dp"
+                    android:text="ECU"
+                    android:textColor="@color/gray" />
+
+                <Button
+                    android:id="@+id/btn_lock"
+                    android:layout_width="65dp"
+                    android:layout_height="50dp"
+                    android:layout_margin="5dp"
+                    android:background="@drawable/button_stroke_dark_red_press_white"
+                    android:paddingStart="20dp"
+                    android:drawableLeft="@drawable/baseline_lock_outline_24"
+                    android:drawableTint="@color/gray"
+                    android:textColor="@color/gray" />
+
+                <Button
+                    android:id="@+id/btn_unlock"
+                    android:layout_width="65dp"
+                    android:layout_height="50dp"
+                    android:layout_margin="5dp"
+                    android:background="@drawable/button_stroke_dark_red_press_white"
+                    android:drawableLeft="@drawable/baseline_lock_open_24"
+                    android:drawableTint="@color/gray"
+                    android:gravity="center"
+                    android:paddingStart="20dp"
+
+                    android:textColor="@color/gray" />
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:id="@+id/container3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:id="@+id/line2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btnReadDTC"
+                    android:layout_width="145dp"
+                    android:layout_height="50dp"
+                    android:layout_margin="5dp"
+                    android:background="@drawable/button_stroke_dark_red_press_white"
+                    android:text="Read DTC"
+                    android:textColor="@color/gray" />
+
+                <Button
+                    android:id="@+id/btnClearDTC"
+                    android:layout_width="145dp"
+                    android:layout_height="50dp"
+                    android:layout_margin="5dp"
+                    android:background="@drawable/button_stroke_dark_red_press_white"
+                    android:text="Clear DTC"
+                    android:textColor="@color/gray" />
+
+            </LinearLayout>
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:id="@+id/container4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:id="@+id/line3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btn_erase_crash"
+                    android:layout_width="300dp"
+                    android:layout_height="50dp"
+                    android:layout_margin="5dp"
+                    android:background="@drawable/button_stroke_dark_red_press_white"
+                    android:text="Erase CRASH"
+                    android:textColor="@color/gray" />
+
+
+
+            </LinearLayout>
+        </LinearLayout>
+
+
+
+        <LinearLayout
+            android:id="@+id/container5"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:id="@+id/container6"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:id="@+id/line4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal" />
+        </LinearLayout>
+
+        <ListView
+            android:id="@+id/logListView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="10dp"
+            android:layout_marginTop="10dp"
+            android:background="@color/dark_blue"
+            android:textColor="@color/white"
+            app:layout_constraintTop_toBottomOf="@+id/containerECU" />
+
+    </LinearLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

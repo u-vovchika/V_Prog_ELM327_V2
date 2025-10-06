@@ -6,14 +6,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/black"
-    tools:context=".RenaultAirbagContinentalSpcHelp">
+    tools:context=".LadaAirbagTacataSpcHelp">
+
 
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="20dp"
-        android:text="PinOut Renault Continental \n       SPC_RH850  CAN"
+        android:text="PinOut  LADA / UAZ \nTAKATA  SPC CAN"
         android:textSize="17sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
@@ -22,15 +23,15 @@
 
 
     <ImageView
-        android:id="@+id/iv_renault_spc_help"
-        android:layout_width="410dp"
-        android:layout_height="148dp"
+        android:id="@+id/imageView"
+        android:layout_width="406dp"
+        android:layout_height="252dp"
         android:layout_marginTop="20dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.4"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView"
-        app:srcCompat="@drawable/ren_srs_help" />
-
+        app:srcCompat="@drawable/lada_spc" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -43,7 +44,7 @@
         android:textColor="@color/orang"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/iv_renault_spc_help" />
+        app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

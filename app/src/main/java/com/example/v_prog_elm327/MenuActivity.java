@@ -14,6 +14,7 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -33,8 +34,8 @@ import java.util.UUID;
 public class MenuActivity extends AppCompatActivity {
 
     ImageView imageQuestion;
-    TextView textObd2,textRenault;
-
+    TextView textObd2,textRenault,textLada;
+    TextView editTextMessage;
     SharedPreferences sharedPreferences;
     private static final String SHARED_PREV_MODEL = "mypref";
     private static final String KEY_MODEL = "model";
@@ -52,6 +53,8 @@ public class MenuActivity extends AppCompatActivity {
         imageQuestion = findViewById(R.id.imageQuestion);
         textObd2 = findViewById(R.id.textObd2);
         textRenault = findViewById(R.id.textRenault);
+        textLada = findViewById(R.id.textLada);
+        editTextMessage = findViewById(R.id.textRenault);
 
         imageQuestion.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -61,23 +64,6 @@ public class MenuActivity extends AppCompatActivity {
             }
         });
 
-        //////////////////////////////////////////////////////////////////////
-        sharedPreferences = getSharedPreferences(SHARED_PREV_MODEL, MODE_PRIVATE);
-        String name = sharedPreferences.getString(KEY_MODEL, null);
-        if (name != null) {
-            Intent intent = new Intent(MenuActivity.this, UniversalActivitySet.class);
-            startActivity(intent);
-        }
-
-
-//        /// выбираем ОБД ObdActivity //////////////////////////////////
-//        textObd2.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Intent intent = new Intent(MenuActivity.this, ObdActivity.class);
-//                startActivity(intent);
-//            }
-//        });
         /// выбираем ОБД BluetoothActivity //////////////////////////////////
         textObd2.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -87,23 +73,32 @@ public class MenuActivity extends AppCompatActivity {
             }
         });
 
+        /// выбираем в меню Lada ////////////////////////////////////////////
+        textLada.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String message = textLada.getText().toString();
+                launchRenaultMenu(message);
+            }
+        });
+
         /// выбираем в меню Renault ////////////////////////////////////////////
         textRenault.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                SharedPreferences.Editor editor = sharedPreferences.edit();
-//                editor.putString(KEY_MODEL, textRenault.getText().toString());
-//                editor.apply();
-
-                Intent intent = new Intent(MenuActivity.this, UniversalActivitySet.class);
-                startActivity(intent);
-                Toast.makeText(MenuActivity.this, "Model Renault success", Toast.LENGTH_SHORT).show();
+                String message = textRenault.getText().toString();
+                launchRenaultMenu(message);
             }
         });
+    }
 
 
 
-
+    private void launchRenaultMenu(String message) {
+        Intent intent = new Intent(MenuActivity.this, UniversalActivitySet.class);
+        intent.putExtra("model_auto", message);
+        startActivity(intent);
+        Toast.makeText(MenuActivity.this, "Model "+ message +" success", Toast.LENGTH_SHORT).show();
     }
 
 

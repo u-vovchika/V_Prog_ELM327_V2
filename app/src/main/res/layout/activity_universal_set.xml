@@ -103,7 +103,7 @@
                     android:orientation="horizontal">
 
                     <TextView
-                        android:id="@+id/tv_ren_srs_set"
+                        android:id="@+id/tv_srs_set"
                         android:layout_width="300dp"
                         android:layout_height="50dp"
                         android:layout_margin="5dp"

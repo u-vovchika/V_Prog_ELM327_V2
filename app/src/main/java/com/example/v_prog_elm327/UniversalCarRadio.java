@@ -24,6 +24,12 @@ public class UniversalCarRadio extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_universal_car_radio);
 
+        /// принимаем сообщение от предыдущего меню
+        Intent intent = getIntent();
+        String message = intent.getStringExtra("model_radio");
+        TextView textView = findViewById(R.id.tv_car_radio);
+        textView.setText(message + " Radio");
+
         // строка состояния убирается
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         // возрат назад  ///////////////////////////////////////////////////////
@@ -31,36 +37,24 @@ public class UniversalCarRadio extends AppCompatActivity {
         buttonBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                SharedPreferences.Editor editor = sharedPreferences.edit();
-//                editor.clear(); // стираем данные textViewModel
-//                editor.apply(); // записываем данные после очистки textViewModel
-//                finish();// завершения процесса
                 Intent intent = new Intent(UniversalCarRadio.this, MenuActivity.class);
                 startActivity(intent);
             }
         });
         /// /////////////////////////////////////////////////////////////////////
-        TextView tv_car_radio = findViewById(R.id.tv_car_radio);
-        /////// Выводим модель ///////////////////////////////////////
-        SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREV_MODEL, MODE_PRIVATE);
-        String name = sharedPreferences.getString(KEY_RADIO, null);
-        if(name != null){
-            tv_car_radio.setText(name);
-        }
-        /// Выбор подушек на рено ////////////////////////////////////////////////////
-        /// ////  выбираем Renault_final /////////////////////////////////////////////////////////
-        TextView textRenaultXC = findViewById(R.id.textRenaultXC);
-        textRenaultXC.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-//                SharedPreferences.Editor editor = sharedPreferences.edit();
-//                editor.putString(KEY_RADIO, textRenaultXC.getText().toString());
-//                editor.apply();
-                Intent intent = new Intent(UniversalCarRadio.this, RenaultCarradioFinal.class);
-                startActivity(intent);
-            }
-        });
+        // TextView tv_car_radio = findViewById(R.id.tv_car_radio);
 
+        if (textView.getText().toString().equals("Renault Radio") || textView.getText().toString().equals("Lada Radio")) {
+            /// ////  выбираем Renault_final /////////////////////////////////////////////////////////
+            TextView textRenaultXC = findViewById(R.id.textRenaultXC);
+            textRenaultXC.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(UniversalCarRadio.this, RenaultCarradioFinal.class);
+                    startActivity(intent);
+                }
+            });
+        }
 
     }
 }

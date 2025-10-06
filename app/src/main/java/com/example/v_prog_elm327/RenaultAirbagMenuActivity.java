@@ -24,6 +24,13 @@ public class RenaultAirbagMenuActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_renault_airbag_menu);
 
+        /// принимаем сообщение от главного меню
+        Intent intent = getIntent();
+        String message = intent.getStringExtra("model_srs");
+        TextView textView = findViewById(R.id.textViewModelEcu);
+        textView.setText(message + " SRS");
+
+
         tv_ren_srs_spc = findViewById(R.id.tv_ren_srs_spc);
         tv_ren_srs_rh850 = findViewById(R.id.tv_ren_srs_rh850);
 
@@ -34,10 +41,6 @@ public class RenaultAirbagMenuActivity extends AppCompatActivity {
         buttonBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                SharedPreferences.Editor editor = sharedPreferences.edit();
-//                editor.clear(); // стираем данные textViewModel
-//                editor.apply(); // записываем данные после очистки textViewModel
-//                finish();// завершения процесса
                 Intent intent = new Intent(RenaultAirbagMenuActivity.this, UniversalCarRadio.class);
                 startActivity(intent);
             }

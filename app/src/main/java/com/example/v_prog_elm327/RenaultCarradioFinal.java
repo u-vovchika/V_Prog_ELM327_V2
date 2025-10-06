@@ -32,10 +32,6 @@ public class RenaultCarradioFinal extends AppCompatActivity {
         buttonBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                SharedPreferences.Editor editor = sharedPreferences.edit();
-//                editor.clear(); // стираем данные textViewModel
-//                editor.apply(); // записываем данные после очистки textViewModel
-//                finish();// завершения процесса
                 Intent intent = new Intent(RenaultCarradioFinal.this, UniversalCarRadio.class);
                 startActivity(intent);
             }

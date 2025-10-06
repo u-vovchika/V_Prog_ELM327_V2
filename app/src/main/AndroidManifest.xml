@@ -24,6 +24,15 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.V_PROG_ELM327">
         <activity
+            android:name=".LadaAirbagTacataSpcHelp"
+            android:exported="false" />
+        <activity
+            android:name=".LadaAirbagMenuActivity"
+            android:exported="false" />
+        <activity
+            android:name=".LadaAirbagTakataSPCActivity"
+            android:exported="false" />
+        <activity
             android:name=".RenaultAirbagContinentalRh850Activity"
             android:exported="false" />
         <activity
